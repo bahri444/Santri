@@ -5,12 +5,13 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use DataTables;
 use App\Models\Ruangan;
+use Illuminate\Support\Facades\Validator;
 
 class RuanganController extends Controller
 {
     /**
      * Menampilkan halaman tabel user
-     * 
+     *
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
@@ -38,6 +39,12 @@ class RuanganController extends Controller
     }
     public function tambah(Request $request)
     {
+        $validate = Validator::make($request->all(), [
+            'ruangan' => 'required',
+        ]);
+        if ($validate->fails()) {
+            return response()->json(['error' => $validate->errors()], 401);
+        }
         $ruangan = Ruangan::create([
             'ruangan' => $request->ruangan,
         ]);
@@ -49,6 +56,12 @@ class RuanganController extends Controller
     }
     public function edit(Request $request)
     {
+        $validate = Validator::make($request->all(), [
+            'ruangan' => 'required',
+        ]);
+        if ($validate->fails()) {
+            return response()->json(['error' => $validate->errors()], 401);
+        }
         $ruangan = Ruangan::whereId($request->id)->first();
         if ($ruangan) {
             $ruangan->ruangan = $request->ruangan;

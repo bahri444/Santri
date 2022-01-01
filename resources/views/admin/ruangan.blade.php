@@ -37,10 +37,6 @@
             <form id="formTambah">
                 @csrf
                 <div class="modal-body">
-                    <div class="form-group">
-                        <label for="ruangan">Ruangan</label>
-                        <input type="text" name="ruangan" placeholder="masukkan nama ruangan" class="form-control">
-                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
@@ -64,11 +60,7 @@
             <form id="formEdit">
                 @csrf
                 <div class="modal-body">
-                    <input type="hidden" name="id" id="id">
-                    <div class="form-group">
-                        <label for="ruangan">Ruangan</label>
-                        <input type="text" name="ruangan" id="ruangan" placeholder="masukkan nama rungan" class="form-control">
-                    </div>
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
@@ -107,6 +99,12 @@
 
 @section('script')
 <script>
+    const form = `
+    <input type="hidden" name="id" id="id">
+                    <div class="form-group">
+                        <label for="ruangan">Ruangan</label>
+                        <input type="text" name="ruangan" id="ruangan" placeholder="masukkan nama rungan" class="form-control">
+                    </div>`
     $(document).ready(function() {
         let table = $('.table').DataTable({
             processing: true,
@@ -131,6 +129,7 @@
             ]
         })
         $('#tambah').click(function() {
+            $('#modalTambah').find('.modal-body').html(form)
             $('#modalTambah').modal('show')
         })
         $('#formTambah').submit(function(e) {
@@ -140,16 +139,21 @@
                 .then(res => {
                     table.ajax.reload();
                     $('#modalTambah').modal('hide')
+                    toastr['success'](res.data.pesan)
                 })
                 .catch(err => {
-                    if (err.status === 500) {
-                        console.log(err.data.data.pesan)
+                    if (err.response.status === 401) {
+                        toastr['error']("Field tidak boleh kosong")
+                    }
+                    if (err.response.status === 500) {
+                        toastr['error'](err.response.data.pesan)
                     }
                 })
         })
         $('#data').on('click', '.edit', function() {
-            $('#id').val($(this).data('id'))
-            $('#ruangan').val($(this).data('ruangan'))
+            $('#modalEdit').find('.modal-body').html(form)
+            $('#modalEdit').find('#id').val($(this).data('id'))
+            $('#modalEdit').find('#ruangan').val($(this).data('ruangan'))
             $('#modalEdit').modal('show')
         })
         $('#formEdit').submit(function(e) {
@@ -172,6 +176,7 @@
                 .then(res => {
                     $('#modalHapus').modal('hide')
                     table.ajax.reload()
+                    toastr['success'](res.data.pesan)
                 })
         })
     })

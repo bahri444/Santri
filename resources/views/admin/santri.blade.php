@@ -40,22 +40,6 @@
             <form id="formTambah">
                 @csrf
                 <div class="modal-body">
-                    <div class="form-group">
-                        <label for="nama">Nama</label>
-                        <input type="text" name="nama" placeholder="masukkan nama" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label for="alamat">Alamat</label>
-                        <input type="text" name="alamat" placeholder="masukkan alamat" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label for="tempat">Tempat</label>
-                        <input type="text" name="tempat" placeholder="masukkan tempat tinggal" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label for="tgl_lahir">Tanggal lahir</label>
-                        <input type="date" name="tgl_lahir" placeholder="masukkan tanggal lahir" class="form-control">
-                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
@@ -79,23 +63,6 @@
             <form id="formEdit">
                 @csrf
                 <div class="modal-body">
-                    <input type="hidden" name="id" id="id">
-                    <div class="form-group">
-                        <label for="nama">Nama</label>
-                        <input type="text" name="nama" id="nama" placeholder="masukkan nama" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label for="alamat">Alamat</label>
-                        <input type="text" name="alamat" id="alamat" placeholder="masukkan alamat" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label for="tempat">Tempat</label>
-                        <input type="text" name="tempat" id="tempat" placeholder="masukkan tempat tinggal" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label for="tgl_lahir">Tanggal lahir</label>
-                        <input type="date" name="tgl_lahir" id="tgl_lahir" placeholder="masukkan tanggal lahir" class="form-control">
-                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
@@ -134,6 +101,24 @@
 
 @section('script')
 <script>
+    const form = `
+    <input type="hidden" name="id" id="id">
+                    <div class="form-group">
+                        <label for="nama">Nama</label>
+                        <input type="text" name="nama" id="nama" placeholder="masukkan nama" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="alamat">Alamat</label>
+                        <input type="text" name="alamat" id="alamat" placeholder="masukkan alamat" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="tempat">Tempat</label>
+                        <input type="text" name="tempat" id="tempat" placeholder="masukkan tempat tinggal" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="tgl_lahir">Tanggal lahir</label>
+                        <input type="date" name="tgl_lahir" id="tgl_lahir" placeholder="masukkan tanggal lahir" class="form-control">
+                    </div>`
     $(document).ready(function() {
         let table = $('.table').DataTable({
             processing: true,
@@ -171,6 +156,7 @@
             ]
         })
         $('#tambah').click(function() {
+            $('#modalTambah').find('.modal-body').html(form)
             $('#modalTambah').modal('show')
         })
         $('#formTambah').submit(function(e) {
@@ -182,17 +168,21 @@
                     $('#modalTambah').modal('hide')
                 })
                 .catch(err => {
-                    if (err.status === 500) {
-                        console.log(err.data.data.pesan)
+                    if (err.response.status === 401) {
+                        toastr['error']("Field tidak boleh kosong")
+                    }
+                    if (err.response.status === 500) {
+                        toastr['error'](res.response.data.pesan)
                     }
                 })
         })
         $('#data').on('click', '.edit', function() {
-            $('#id').val($(this).data('id'))
-            $('#nama').val($(this).data('nama'))
-            $('#alamat').val($(this).data('alamat'))
-            $('#tempat').val($(this).data('tempat'))
-            $('#tgl_lahir').val($(this).data('tgl_lahir'))
+            $('#modalEdit').find('.modal-body').html(form)
+            $('#modalEdit').find('#id').val($(this).data('id'))
+            $('#modalEdit').find('#nama').val($(this).data('nama'))
+            $('#modalEdit').find('#alamat').val($(this).data('alamat'))
+            $('#modalEdit').find('#tempat').val($(this).data('tempat'))
+            $('#modalEdit').find('#tgl_lahir').val($(this).data('tgl_lahir'))
             $('#modalEdit').modal('show')
         })
         $('#formEdit').submit(function(e) {
@@ -202,10 +192,19 @@
                 .then(res => {
                     table.ajax.reload()
                     $('#modalEdit').modal('hide')
+                    toastr['success'](res.data.pesan)
+                })
+                .catch(err => {
+                    if (err.response.status === 401) {
+                        toastr['error']("Field tidak boleh kosong")
+                    }
+                    if (err.response.status === 500) {
+                        toastr['error'](res.response.data.pesan)
+                    }
                 })
         })
         $('#data').on('click', '.hapus', function() {
-            $('#idHapus').val($(this).data('id'))
+            $('#modalHapus').find('#idHapus').val($(this).data('id'))
             $('#modalHapus').modal('show')
         })
         $('#formHapus').submit(function(e) {
@@ -215,6 +214,12 @@
                 .then(res => {
                     $('#modalHapus').modal('hide')
                     table.ajax.reload()
+                    toastr['success'](res.data.pesan)
+                })
+                .catch(err => {
+                    if (err.response.status === 500) {
+                        toastr['error'](res.response.data.pesan)
+                    }
                 })
         })
     })

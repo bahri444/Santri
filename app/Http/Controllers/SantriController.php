@@ -6,12 +6,13 @@ use App\Models\Ruangan;
 use App\Models\Santri;
 use DataTables;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class SantriController extends Controller
 {
     /**
      * Menampilkan halaman tabel user
-     * 
+     *
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
@@ -38,6 +39,15 @@ class SantriController extends Controller
     }
     public function tambah(Request $request)
     {
+        $validate = Validator::make($request->all(), [
+            'nama' => 'required',
+            'alamat' => 'required',
+            'tempat' => 'required',
+            'tgl_lahir' => 'required',
+        ]);
+        if ($validate->fails()) {
+            return response()->json(['error' => $validate->errors()], 401);
+        }
         $santri = Santri::create([
             'nama' => $request->nama,
             'alamat' => $request->alamat,
@@ -52,6 +62,15 @@ class SantriController extends Controller
     }
     public function edit(Request $request)
     {
+        $validate = Validator::make($request->all(), [
+            'nama' => 'required',
+            'alamat' => 'required',
+            'tempat' => 'required',
+            'tgl_lahir' => 'required',
+        ]);
+        if ($validate->fails()) {
+            return response()->json(['error' => $validate->errors()], 401);
+        }
         $santri = Santri::whereId($request->id)->first();
         if ($santri) {
             $santri->nama = $request->nama;
