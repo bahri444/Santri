@@ -8,12 +8,13 @@ use DataTables;
 //use models user
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
     /**
      * Menampilkan halaman tabel user
-     * 
+     *
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
@@ -41,6 +42,15 @@ class UserController extends Controller
     }
     public function tambah(Request $request)
     {
+        $validate = Validator::make($request->all(), [
+            'nama' => 'required',
+            'username' => 'required|unique:user',
+            'password' => 'required',
+            'level' => 'required',
+        ]);
+        if ($validate->fails()) {
+            return response()->json(['error' => $validate->errors()], 401);
+        }
         $user = User::create([
             'nama' => $request->nama,
             'username' => $request->username,
@@ -55,6 +65,14 @@ class UserController extends Controller
     }
     public function edit(Request $request)
     {
+        $validate = Validator::make($request->all(), [
+            'nama' => 'required',
+            'username' => 'required',
+            'level' => 'required',
+        ]);
+        if ($validate->fails()) {
+            return response()->json(['error' => $validate->errors()], 401);
+        }
         $user = User::whereId($request->id)->first();
         if ($user) {
             $user->nama = $request->nama;

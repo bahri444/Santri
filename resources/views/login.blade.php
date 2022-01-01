@@ -9,7 +9,7 @@
                 <p class="login-box-msg">aplikasi pembayaran catering santri</p>
 
                 <form action="{{url('/ceklogin')}}" method="post">
-                    {{csrf_field()}}
+                    @csrf
                     <div class="input-group mb-3">
                         <input type="text" name="username" class="form-control @error('username') is-invalid @enderror" placeholder="Username" value="{{old('username')}}">
                         <div class="input-group-append">

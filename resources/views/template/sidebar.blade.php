@@ -38,12 +38,13 @@
 
                 <li class="nav-item">
                     <a href="{{ route('dashboard') }}" class="nav-link">
-                        <i class="nav-icon fas fa-speedometer"></i>
+                        <i class="nav-icon fas fa-tachometer-alt"></i>
                         <p>
                             Dashboard
                         </p>
                     </a>
                 </li>
+                @if(Auth::user()->role == 'admin')
                 <li class="nav-item">
                     <a href="{{ route('user') }}" class="nav-link">
                         <i class="nav-icon fas fa-user"></i>
@@ -52,6 +53,7 @@
                         </p>
                     </a>
                 </li>
+                @endif
                 <li class="nav-item">
                     <a href="{{ route('ruangan') }}" class="nav-link">
                         <i class="nav-icon fas fa-building"></i>
