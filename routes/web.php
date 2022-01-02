@@ -6,6 +6,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SantriController;
 use App\Http\Controllers\RuanganController;
+use App\Http\Controllers\RuanganSantriController;
 
 /*
 |--------------------------------------------------------------------------
@@ -48,5 +49,10 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         Route::post('/tambah', [RuanganController::class, 'tambah'])->name('ruangan.tambah');
         Route::post('/edit', [RuanganController::class, 'edit'])->name('ruangan.edit');
         Route::post('/hapus', [RuanganController::class, 'delete'])->name('ruangan.hapus');
+        Route::get('/santri/{id}', [RuanganSantriController::class, 'index'])->name('ruangan.santri');
+        Route::post('/santri/{id}/baru', [RuanganSantriController::class, 'baru'])->name('ruangan.santri.baru');
+        Route::post('/santri/{id}/tambah', [RuanganSantriController::class, 'store'])->name('ruangan.santri.tambah');
+        Route::post('/santri/{id}/edit', [RuanganSantriController::class, 'edit'])->name('ruangan.santri.edit');
+        Route::post('/santri/{id}/hapus', [RuanganSantriController::class, 'delete'])->name('ruangan.santri.hapus');
     });
 });

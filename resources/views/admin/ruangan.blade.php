@@ -13,6 +13,7 @@
                     <tr>
                         <th>No</th>
                         <th>Ruangan</th>
+                        <th>Tambah Santri</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -119,6 +120,12 @@
                 {
                     data: 'ruangan',
                     name: 'ruangan'
+                },
+                {
+                    data: 'btn',
+                    name: 'btn',
+                    orderable: false,
+                    searchable: false
                 },
                 {
                     data: 'action',

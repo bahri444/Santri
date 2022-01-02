@@ -44,18 +44,18 @@
                 </li>
                 @endif
                 <li class="nav-item">
-                    <a href="{{ route('ruangan') }}" class="nav-link">
-                        <i class="nav-icon fas fa-building"></i>
-                        <p>
-                            Ruangan
-                        </p>
-                    </a>
-                </li>
-                <li class="nav-item">
                     <a href="{{ route('santri') }}" class="nav-link">
                         <i class="nav-icon fas fa-users"></i>
                         <p>
                             Santri
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('ruangan') }}" class="nav-link">
+                        <i class="nav-icon fas fa-building"></i>
+                        <p>
+                            Ruangan
                         </p>
                     </a>
                 </li>

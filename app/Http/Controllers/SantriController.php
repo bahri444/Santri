@@ -22,7 +22,7 @@ class SantriController extends Controller
             return DataTables::of($datas)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
-                    $btn = "<button type='button' data-id='$row->id' data-nama='$row->nama' data-alamat='$row->alamat' data-tempat='$row->tempat' data-tgl_lahir='$row->tgl_lahir' class='edit btn btn-sm btn-warning btn-sm' > <i class='fas fa-edit'></i></button>";
+                    $btn = "<button type='button' data-id='$row->id' data-nama='$row->nama' data-jk='$row->jk'  data-alamat='$row->alamat' data-tempat='$row->tempat' data-tgl_lahir='$row->tgl_lahir' class='edit btn btn-sm btn-warning btn-sm' > <i class='fas fa-edit'></i></button>";
                     $btn .= "<button type='button' data-id='$row->id' class='hapus btn btn-sm btn-danger m-1'> <i class='fas fa-trash'></i></button>";
                     return $btn;
                 })
@@ -42,6 +42,7 @@ class SantriController extends Controller
         $validate = Validator::make($request->all(), [
             'nama' => 'required',
             'alamat' => 'required',
+            'jk' => 'required',
             'tempat' => 'required',
             'tgl_lahir' => 'required',
         ]);
@@ -50,6 +51,7 @@ class SantriController extends Controller
         }
         $santri = Santri::create([
             'nama' => $request->nama,
+            'jk' => $request->jk,
             'alamat' => $request->alamat,
             'tempat' => $request->tempat,
             'tgl_lahir' => $request->tgl_lahir
@@ -65,6 +67,7 @@ class SantriController extends Controller
         $validate = Validator::make($request->all(), [
             'nama' => 'required',
             'alamat' => 'required',
+            'jk' => 'required',
             'tempat' => 'required',
             'tgl_lahir' => 'required',
         ]);
@@ -74,6 +77,7 @@ class SantriController extends Controller
         $santri = Santri::whereId($request->id)->first();
         if ($santri) {
             $santri->nama = $request->nama;
+            $santri->jk = $request->jk;
             $santri->alamat = $request->alamat;
             $santri->tempat = $request->tempat;
             $santri->tgl_lahir = $request->tgl_lahir;

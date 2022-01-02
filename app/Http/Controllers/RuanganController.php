@@ -20,13 +20,17 @@ class RuanganController extends Controller
             $datas = Ruangan::all();
             return DataTables::of($datas)
                 ->addIndexColumn()
+                ->addColumn('btn', function ($row) {
+                    $btn = "<a href='" . url("admin/ruangan/santri/$row->id") . "' class='btn btn-info btn-sm' >Tambah Santri</a>";
+                    return $btn;
+                })
                 ->addColumn('action', function ($row) {
                     $btn = "<button type='button' data-id='$row->id' data-ruangan='$row->ruangan' class='edit btn btn-sm btn-warning m-1'><i class='fas fa-edit'></i></button>";
                     $btn .= "<button type='button' data-id='$row->id' class='hapus btn btn-sm btn-danger m-1'> <i class='fas fa-trash'></i></button>";
 
                     return $btn;
                 })
-                ->rawColumns(['action'])
+                ->rawColumns(['action', 'btn'])
                 ->make(true);
         }
         $data = [
