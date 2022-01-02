@@ -21,6 +21,8 @@
     <link rel="stylesheet" href="{{ asset('assets') }}/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
     <link rel="stylesheet" href="{{ asset('assets') }}/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
     <link rel="stylesheet" href="{{ asset('assets/plugins/toastr/toastr.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets') }}/plugins/select2/css/select2.min.css">
+    <link rel="stylesheet" href="{{ asset('assets') }}/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
     <script src="{{ asset('assets') }}/plugins/jquery/jquery.min.js"></script>
 </head>
 
@@ -43,6 +45,7 @@
 <script src="{{ asset('assets') }}/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
 <script src="{{ asset('assets') }}/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="{{ asset('assets') }}/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+<script src="{{ asset('assets') }}/plugins/select2/js/select2.full.min.js"></script>
 <!-- AdminLTE App -->
 <script src="{{ asset('assets') }}/dist/js/adminlte.js"></script>
 <script>
@@ -62,6 +65,11 @@
         "showMethod": "fadeIn",
         "hideMethod": "fadeOut"
     }
+    $(document).ready(function() {
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        })
+    })
 </script>
 @yield('script')
 </body>

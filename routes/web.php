@@ -49,10 +49,13 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         Route::post('/tambah', [RuanganController::class, 'tambah'])->name('ruangan.tambah');
         Route::post('/edit', [RuanganController::class, 'edit'])->name('ruangan.edit');
         Route::post('/hapus', [RuanganController::class, 'delete'])->name('ruangan.hapus');
-        Route::get('/santri/{id}', [RuanganSantriController::class, 'index'])->name('ruangan.santri');
-        Route::post('/santri/{id}/baru', [RuanganSantriController::class, 'baru'])->name('ruangan.santri.baru');
-        Route::post('/santri/{id}/tambah', [RuanganSantriController::class, 'store'])->name('ruangan.santri.tambah');
-        Route::post('/santri/{id}/edit', [RuanganSantriController::class, 'edit'])->name('ruangan.santri.edit');
-        Route::post('/santri/{id}/hapus', [RuanganSantriController::class, 'delete'])->name('ruangan.santri.hapus');
+        Route::get('/santri/{id}', [RuanganSantriController::class, 'index']);
+        Route::get('/santri/{id}/getSantri', [RuanganSantriController::class, 'getSantri']);
+        Route::post('/santri/{id}/baru', [RuanganSantriController::class, 'baru']);
+        Route::post('/santri/{id}/tambah', [RuanganSantriController::class, 'store']);
+        Route::post('/santri/{id}/edit', [RuanganSantriController::class, 'edit']);
+        Route::post('/santri/{id}/hapus', [RuanganSantriController::class, 'delete']);
+    });
+    Route::prefix(('pembayaran'))->group(function () {
     });
 });
