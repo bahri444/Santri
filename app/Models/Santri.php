@@ -11,6 +11,7 @@ class Santri extends Model
     protected $table = 'santri';
     protected $fillable = [
         'nama',
+        'jk',
         'alamat',
         'tempat',
         'tgl_lahir',
