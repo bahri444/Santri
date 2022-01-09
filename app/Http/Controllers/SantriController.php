@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Ruangan;
 use App\Models\Santri;
 use DataTables;
 use Illuminate\Http\Request;

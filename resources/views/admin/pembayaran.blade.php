@@ -3,20 +3,19 @@
 
 <div class="card">
     <div class="card-body">
-        <h3>Data Santri</h3>
+        <h3>Histori Belanja</h3>
         <hr>
-        <button id="tambah" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i>Tambah Data</button>
+        <button id="tambah" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i>Tambah Pembayaran</button>
         <hr>
         <div class="table-responsive">
-            <table class="table">
+            <table class="table  w-100">
                 <thead>
                     <tr>
                         <th>No</th>
-                        <th>Nama</th>
-                        <th>Jenis Kelamin</th>
-                        <th>Alamat</th>
-                        <th>Tempat</th>
-                        <th>Tanggal Lahir</th>
+                        <th>Id Santri</th>
+                        <th>Jumlah Bayar</th>
+                        <th>Tanggal Bayar</th>
+                        <th>Total</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -28,12 +27,12 @@
     </div>
 </div>
 
-<!-- modal tambah data santri -->
+<!-- modal tambah data Pembayaran -->
 <div class="modal" tabindex="-1" id="modalTambah" role="dialog">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Tambah Data Santri</h5>
+                <h5 class="modal-title">Tambah Histori Pembayaran</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -51,12 +50,12 @@
     </div>
 </div>
 
-<!-- modal Edit data santri -->
+<!-- modal Edit Pembayaran -->
 <div class="modal" tabindex="-1" id="modalEdit" role="dialog">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Edit Data Santri</h5>
+                <h5 class="modal-title">Edit Histori Pembayaran </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -74,12 +73,12 @@
     </div>
 </div>
 
-<!-- modal Hapus data santri -->
+<!-- modal Hapus pembayaran -->
 <div class="modal" tabindex="-1" id="modalHapus" role="dialog">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Hapus Data Santri</h5>
+                <h5 class="modal-title">Hapus Histori Pembayaran</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -88,7 +87,7 @@
                 @csrf
                 <div class="modal-body">
                     <input type="hidden" name="id" id="idHapus">
-                    <h4>Apakah Anda Yakin ingin menghapus data santri ?</h4>
+                    <h4>Apakah Anda Yakin ingin menghapus histori pembayaran ?</h4>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
@@ -105,28 +104,16 @@
     const form = `
     <input type="hidden" name="id" id="id">
                     <div class="form-group">
-                        <label for="nama">Nama</label>
-                        <input type="text" name="nama" id="nama" placeholder="masukkan nama" class="form-control">
+                        <label for="santri_id">Id Santri</label>
+                        <input type="text" name="santri_id" id="santri_id" placeholder="masukkan id santri" class="form-control">
                     </div>
                     <div class="form-group">
-                        <label for="jk">Jenis Kelamin</label>
-                        <select name="jk" id="jk" class="form-control">
-                            <option value="">Pilih Jenis Kelamin</option>
-                            <option value="L">Laki-laki</option>
-                            <option value="P">Perempuan</option>
-                        </select>
+                        <label for="jml_bayar">Jumlah Bayar</label>
+                        <input type="text" name="jml_bayar" id="jml_bayar" placeholder="masukkan jumlah bayar" class="form-control">
                     </div>
                     <div class="form-group">
-                        <label for="alamat">Alamat</label>
-                        <input type="text" name="alamat" id="alamat" placeholder="masukkan alamat" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label for="tempat">Tempat</label>
-                        <input type="text" name="tempat" id="tempat" placeholder="masukkan tempat tinggal" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label for="tgl_lahir">Tanggal lahir</label>
-                        <input type="date" name="tgl_lahir" id="tgl_lahir" placeholder="masukkan tanggal lahir" class="form-control">
+                        <label for="tgl_bayar">Tanggal Bayar</label>
+                        <input type="date" name="tgl_bayar" id="tgl_bayar" placeholder="" class="form-control">
                     </div>`
     $(document).ready(function() {
         let table = $('.table').DataTable({
@@ -140,24 +127,20 @@
                     searchable: false
                 },
                 {
-                    data: 'nama',
-                    name: 'nama'
+                    data: 'santri_id',
+                    name: 'santri_id'
                 },
                 {
-                    data: 'jk',
-                    name: 'jk'
+                    data: 'jml_bayar',
+                    name: 'jml_bayar'
                 },
                 {
-                    data: 'alamat',
-                    name: 'alamat'
+                    data: 'tgl_bayar',
+                    name: 'tgl_bayar'
                 },
                 {
-                    data: 'tempat',
-                    name: 'tempat'
-                },
-                {
-                    data: 'tgl_lahir',
-                    name: 'tgl_lahir'
+                    data: 'total',
+                    name: 'total'
                 },
                 {
                     data: 'action',
@@ -179,33 +162,6 @@
                 .then(res => {
                     table.ajax.reload();
                     $('#modalTambah').modal('hide')
-                })
-                .catch(err => {
-                    if (err.response.status === 401) {
-                        toastr['error']("Field tidak boleh kosong")
-                    }
-                    if (err.response.status === 500) {
-                        toastr['error'](res.response.data.pesan)
-                    }
-                })
-        })
-        $('#data').on('click', '.edit', function() {
-            $('#modalEdit').find('.modal-body').html(form)
-            $('#modalEdit').find('#id').val($(this).data('id'))
-            $('#modalEdit').find('#nama').val($(this).data('nama'))
-            $('#modalEdit').find('#jk').val($(this).data('jk'))
-            $('#modalEdit').find('#alamat').val($(this).data('alamat'))
-            $('#modalEdit').find('#tempat').val($(this).data('tempat'))
-            $('#modalEdit').find('#tgl_lahir').val($(this).data('tgl_lahir'))
-            $('#modalEdit').modal('show')
-        })
-        $('#formEdit').submit(function(e) {
-            e.preventDefault();
-            let data = new FormData(this)
-            axios.post(`{{ $urlEdit }}`, data)
-                .then(res => {
-                    table.ajax.reload()
-                    $('#modalEdit').modal('hide')
                     toastr['success'](res.data.pesan)
                 })
                 .catch(err => {
@@ -213,7 +169,33 @@
                         toastr['error']("Field tidak boleh kosong")
                     }
                     if (err.response.status === 500) {
-                        toastr['error'](res.response.data.pesan)
+                        toastr['error'](err.response.data.pesan)
+                    }
+                })
+        })
+        $('#data').on('click', '.edit', function() {
+            $('#modalEdit').find('.modal-body').html(form)
+            $('#modalEdit').find('#id').val($(this).data('id'))
+            $('#modalEdit').find('#santri_id').val($(this).data('santri_id'))
+            $('#modalEdit').find('#jml_bayar').val($(this).data('jml_bayar'))
+            $('#modalEdit').find('#tgl_bayar').val($(this).data('tgl_bayar'))
+            $('#modalEdit').modal('show')
+        })
+        $('#formEdit').submit(function(e) {
+            e.preventDefault();
+            let data = new FormData(this)
+            axios.post(`{{ $urlEdit }}`, data)
+                .then(result => {
+                    table.ajax.reload()
+                    $('#modalEdit').modal('hide')
+                    toastr['success'](result.data.pesan)
+                })
+                .catch(err => {
+                    if (err.response.status === 401) {
+                        toastr['error']("Field tidak boleh kosong")
+                    }
+                    if (err.response.status === 500) {
+                        toastr['error']('data tidak ada')
                     }
                 })
         })
@@ -225,14 +207,14 @@
             e.preventDefault()
             let data = new FormData(this)
             axios.post(`{{ $urlHapus }}`, data)
-                .then(res => {
+                .then(result => {
                     $('#modalHapus').modal('hide')
                     table.ajax.reload()
-                    toastr['success'](res.data.pesan)
+                    toastr['success'](result.data.pesan)
                 })
                 .catch(err => {
                     if (err.response.status === 500) {
-                        toastr['error'](res.response.data.pesan)
+                        toastr['error'](result.response.data.pesan)
                     }
                 })
         })

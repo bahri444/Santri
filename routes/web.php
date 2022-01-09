@@ -3,10 +3,14 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PembayaranController;
+use App\Http\Controllers\PembayaranSantriController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SantriController;
 use App\Http\Controllers\RuanganController;
 use App\Http\Controllers\RuanganSantriController;
+use App\Http\Controllers\PengeluaranBelanjaController;
+use App\Models\PembayaranSantri;
 
 /*
 |--------------------------------------------------------------------------
@@ -57,5 +61,17 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         Route::post('/santri/{id}/hapus', [RuanganSantriController::class, 'delete']);
     });
     Route::prefix(('pembayaran'))->group(function () {
+        Route::get('/', [PembayaranController::class, 'index'])->name('pembayaran');
+        Route::post('/tambah', [PembayaranController::class, 'tambah'])->name('pembayaran.tambah');
+        Route::post('/edit', [PembayaranController::class, 'edit'])->name('pembayaran.edit');
+        Route::post('/hapus', [PembayaranController::class, 'hapus'])->name('pembayaran.hapus');
+    });
+
+    Route::prefix('pengeluaranBelanja')->group(function () {
+        //pengeluaran belanja controller
+        Route::get('/', [PengeluaranBelanjaController::class, 'index'])->name('pengeluaranBelanja');
+        Route::post('/tambah', [PengeluaranBelanjaController::class, 'tambah'])->name('pengeluaranBelanja.tambah');
+        Route::post('/edit', [PengeluaranBelanjaController::class, 'edit'])->name('pengeluaranBelanja.edit');
+        Route::post('/hapus', [PengeluaranBelanjaController::class, 'hapus'])->name('pengeluaranBelanja.hapus');
     });
 });

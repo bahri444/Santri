@@ -60,10 +60,18 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('ruangan') }}" class="nav-link">
+                    <a href="{{ route('pembayaran') }}" class="nav-link">
                         <i class="nav-icon fas fa-dollar-sign"></i>
                         <p>
                             Pembayaran Catering
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('pengeluaranBelanja') }}" class="nav-link">
+                        <i class="nav-icon fas fa-receipt"></i>
+                        <p>
+                            Histori Belanja
                         </p>
                     </a>
                 </li>
