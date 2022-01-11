@@ -2,39 +2,36 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Role;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
+use App\Models\Menu;
 
-class UserController extends Controller
+class MenuController extends Controller
 {
     //
-    public function index(Request $request)
+    public function index(Request $request, $id = null)
     {
         if ($request->ajax()) {
-            $data = User::select('user.*', 'role.role')->join('role', 'user.role_id', '=', 'role.id')->get();
+            $data = Menu::whereId_parent(0)->orderBy('urutan', 'ASC')->get();
             return DataTables::of($data)
                 ->addIndexColumn()
-                ->addColumn('aktif', function ($row) {
-                    $aktif = $row->is_active ? "Aktif" : "Nonaktif";
-                    return $aktif;
+                ->addColumn('submenu', function ($row) {
+                    $btn = "<a href='" . route('submenu', $row->id) . "' class='btn btn-info'>Submenu</a>";
+                    return $btn;
                 })
                 ->addColumn('action', function ($row) {
-                    $btn = "<button data-id='$row->id' data-role='$row->role' data-username='$row->username' data-role_id='$row->role_id' data-is_active='$row->is_active' class='edit btn btn-warning btn-sm m-1'><i class='fas fa-edit'></i></button>";
+                    $btn = "<button data-id='$row->id' data-title='$row->title' data-icon='$row->icon' data-link='$row->link' class='edit btn btn-warning btn-sm m-1'><i class='fas fa-edit'></i></button>";
                     $btn .= "<button data-id='$row->id' class='hapus btn btn-danger btn-sm m-1'><i class='fas fa-trash'></i></button>";
                     return $btn;
                 })
-                ->rawColumns(['action'])
+                ->rawColumns(['action', 'submenu'])
                 ->make(true);
         }
-        $title = 'user';
-        $th = ['No', 'Username', 'Role', 'Aktif', 'Aksi'];
-        $urlDatatable = route('user');
-        $aksi = route('user.aksi');
-        $role = Role::all();
-        return view('admin.user.index', compact('title', 'th', 'urlDatatable', 'aksi', 'role'));
+        $title = 'menu';
+        $th = ['No', 'Title', 'Icon', 'Link', 'Submenu', 'Urutan', 'Aksi'];
+        $urlDatatable = route('menu');
+        $aksi = route('menu.aksi');
+        return view('admin.menu.index', compact('title', 'th', 'urlDatatable', 'aksi'));
     }
     public function aksi(Request $request)
     {
@@ -58,11 +55,12 @@ class UserController extends Controller
     }
     private function tambah(Request $request)
     {
-        $role = User::create([
-            'username' => $request->username,
-            'password' => Hash::make($request->password),
-            'role_id' => $request->role_id,
-            'is_active' => $request->is_active
+        $role = Menu::create([
+            'title' => $request->title,
+            'icon' => $request->icon,
+            'link' => $request->link,
+            'urutan' => (Menu::whereId_parent(0)->get()->count() + 1),
+            'id_parent' => 0
         ]);
         if ($role) {
             return ['status' => 'success', 'pesan' => 'Data berhasil ditambah'];
@@ -72,13 +70,11 @@ class UserController extends Controller
     }
     private function edit(Request $request)
     {
-        $role = User::whereId($request->id)->first();
+        $role = Menu::whereId($request->id)->first();
         if ($role) {
-            $role->username = $request->username;
-            $role->role_id = $request->role_id;
-            $role->is_active = $request->is_active;
-            if ($request->password)
-                $role->password = Hash::make($request->password);
+            $role->title = $request->title;
+            $role->icon = $request->icon;
+            $role->link = $request->link;
             $role->update();
             return ['status' => 'success', 'pesan' => 'Data berhasil diubah'];
         } else {
@@ -87,7 +83,7 @@ class UserController extends Controller
     }
     private function hapus(Request $request)
     {
-        $role = User::whereId($request->id)->first();
+        $role = Menu::whereId($request->id)->first();
         if ($role) {
             $role->delete();
             return ['status' => 'success', 'pesan' => 'Data berhasil dihapus'];

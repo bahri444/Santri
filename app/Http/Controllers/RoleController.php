@@ -2,39 +2,41 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Role;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
+use App\Models\Role;
 
-class UserController extends Controller
+class RoleController extends Controller
 {
     //
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = User::select('user.*', 'role.role')->join('role', 'user.role_id', '=', 'role.id')->get();
+            $data = Role::all();
             return DataTables::of($data)
                 ->addIndexColumn()
-                ->addColumn('aktif', function ($row) {
-                    $aktif = $row->is_active ? "Aktif" : "Nonaktif";
-                    return $aktif;
+                ->addColumn('can_add', function ($row) {
+                    return $row->can_add ? 'Ya' : 'Tidak';
+                })
+                ->addColumn('can_edit', function ($row) {
+                    return $row->can_edit ? 'Ya' : 'Tidak';
+                })
+                ->addColumn('can_delete', function ($row) {
+                    return $row->can_delete ? 'Ya' : 'Tidak';
                 })
                 ->addColumn('action', function ($row) {
-                    $btn = "<button data-id='$row->id' data-role='$row->role' data-username='$row->username' data-role_id='$row->role_id' data-is_active='$row->is_active' class='edit btn btn-warning btn-sm m-1'><i class='fas fa-edit'></i></button>";
+                    $btn = "<button data-id='$row->id' data-role='$row->role' data-can_edit='$row->can_edit' data-can_add='$row->can_add' data-can_delete='$row->can_delete' class='edit btn btn-warning btn-sm m-1'><i class='fas fa-edit'></i></button>";
                     $btn .= "<button data-id='$row->id' class='hapus btn btn-danger btn-sm m-1'><i class='fas fa-trash'></i></button>";
                     return $btn;
                 })
-                ->rawColumns(['action'])
+                ->rawColumns(['action', 'can_add', 'can_edit', 'can_delete'])
                 ->make(true);
         }
-        $title = 'user';
-        $th = ['No', 'Username', 'Role', 'Aktif', 'Aksi'];
-        $urlDatatable = route('user');
-        $aksi = route('user.aksi');
-        $role = Role::all();
-        return view('admin.user.index', compact('title', 'th', 'urlDatatable', 'aksi', 'role'));
+        $title = 'role';
+        $th = ['No', 'Role', 'Bisa Menambah', 'Bisa Mengedit', 'Bisa menghapus', 'Aksi'];
+        $urlDatatable = route('role');
+        $aksi = route('role.aksi');
+        return view('admin.role.index', compact('title', 'th', 'urlDatatable', 'aksi'));
     }
     public function aksi(Request $request)
     {
@@ -58,11 +60,11 @@ class UserController extends Controller
     }
     private function tambah(Request $request)
     {
-        $role = User::create([
-            'username' => $request->username,
-            'password' => Hash::make($request->password),
-            'role_id' => $request->role_id,
-            'is_active' => $request->is_active
+        $role = Role::create([
+            'role' => $request->role,
+            'can_add' => $request->can_add,
+            'can_edit' => $request->can_edit,
+            'can_delete' => $request->can_delete
         ]);
         if ($role) {
             return ['status' => 'success', 'pesan' => 'Data berhasil ditambah'];
@@ -72,13 +74,12 @@ class UserController extends Controller
     }
     private function edit(Request $request)
     {
-        $role = User::whereId($request->id)->first();
+        $role = Role::whereId($request->id)->first();
         if ($role) {
-            $role->username = $request->username;
-            $role->role_id = $request->role_id;
-            $role->is_active = $request->is_active;
-            if ($request->password)
-                $role->password = Hash::make($request->password);
+            $role->role = $request->role;
+            $role->can_add = $request->can_add;
+            $role->can_edit = $request->can_edit;
+            $role->can_delete = $request->can_delete;
             $role->update();
             return ['status' => 'success', 'pesan' => 'Data berhasil diubah'];
         } else {
@@ -87,7 +88,7 @@ class UserController extends Controller
     }
     private function hapus(Request $request)
     {
-        $role = User::whereId($request->id)->first();
+        $role = Role::whereId($request->id)->first();
         if ($role) {
             $role->delete();
             return ['status' => 'success', 'pesan' => 'Data berhasil dihapus'];
