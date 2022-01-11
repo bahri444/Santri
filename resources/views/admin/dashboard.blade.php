@@ -55,7 +55,7 @@
             <div class="inner">
                 <h3>{{ $pembayaran }}</h3>
 
-                <p>Catering bulan ini</p>
+                <p>Catering Minggu ini</p>
             </div>
             <div class="icon">
                 <i class="ion ion-android-clipboard"></i>

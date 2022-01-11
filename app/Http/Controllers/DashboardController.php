@@ -14,7 +14,7 @@ class DashboardController extends Controller
         $user = User::all()->count();
         $santri = Santri::all()->count();
         $ruangan = Ruangan::all()->count();
-        $pembayaran = Pembayaran::all()->count();
+        $pembayaran = Pembayaran::all()->sum('jml_bayar');
         return view('admin.dashboard', compact('user', 'santri', 'ruangan', 'pembayaran'));
     }
 }

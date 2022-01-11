@@ -5,11 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Pembayaran;
 use DataTables;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use mysqli;
 use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\YearFrac;
 use PhpOffice\PhpSpreadsheet\Calculation\MathTrig\Sum;
 use PHPUnit\TextUI\XmlConfiguration\Group;
+
+//Pembayaran::withCount('tgl_bayar')->groupBy('santri_id');
 
 class PembayaranController extends Controller
 {
@@ -25,13 +28,8 @@ class PembayaranController extends Controller
             return DataTables::of($datas)
                 ->addIndexColumn()
 
-
-                // ->addColumn('total', function ($row) {
-                //     $data->("SELECT SUM(jml_bayar) AS total FROM pembayaran GROUP BY santri_id");
-                //     return $data;
-                // })
                 ->addColumn('total', function ($row) {
-                    return ($row->jml_bayar);
+                    return ($row->groupBy('santri_id')->sum('jml_bayar'));
                 })
                 ->addColumn('action', function ($row) {
                     $btn = "<button type='button' data-id='$row->id' data-santri_id='$row->santri_id' data-jml_bayar='$row->jml_bayar'  data-tgl_bayar='$row->tgl_bayar' class='edit btn btn-sm btn-warning btn-sm' > <i class='fas fa-edit'></i></button>";
@@ -50,6 +48,10 @@ class PembayaranController extends Controller
         ];
         return view('admin.pembayaran', $data);
     }
+    // public function Total_bayar($row)
+    // {
+    //     return ($row->sum('jml_bayar'));
+    // }
     public function tambah(Request $request)
     {
         $validate = Validator::make($request->all(), [
