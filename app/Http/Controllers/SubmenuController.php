@@ -16,19 +16,32 @@ class SubmenuController extends Controller
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
-                    $btn = "<button data-id='$row->id' data-title='$row->title' data-icon='$row->icon' data-link='$row->link' class='edit btn btn-warning btn-sm m-1'><i class='fas fa-edit'></i></button>";
-                    $btn .= "<button data-id='$row->id' class='hapus btn btn-danger btn-sm m-1'><i class='fas fa-trash'></i></button>";
+                    $role = $this->role();
+                    $btn = '';
+                    if ($role->can_edit && $role->can_delete) {
+                        $btn = "<button data-id='$row->id' data-title='$row->title' data-icon='$row->icon' data-link='$row->link' class='edit btn btn-warning btn-sm m-1'><i class='fas fa-edit'></i></button>";
+                        $btn .= "<button data-id='$row->id' class='hapus btn btn-danger btn-sm m-1'><i class='fas fa-trash'></i></button>";
+                    } elseif ($role->can_edit) {
+                        $btn = "<button data-id='$row->id' data-title='$row->title' data-icon='$row->icon' data-link='$row->link' class='edit btn btn-warning btn-sm m-1'><i class='fas fa-edit'></i></button>";
+                    } elseif ($role->can_delete) {
+                        $btn = "<button data-id='$row->id' class='hapus btn btn-danger btn-sm m-1'><i class='fas fa-trash'></i></button>";
+                    }
                     return $btn;
                 })
                 ->rawColumns(['action'])
                 ->make(true);
         }
+        $level = $this->role();
         $title = 'submenu';
-        $th = ['No', 'Title', 'Link', 'Urutan', 'Aksi'];
+        $th = [];
+        if ($level->can_edit || $level->can_delete)
+            $th = ['No', 'Title', 'Link', 'Urutan', 'Aksi'];
+        else
+            $th = ['No', 'Title', 'Link', 'Urutan'];
         $urlDatatable = route('submenu', $id);
         $aksi = route('submenu.aksi', $id);
         $id_parent = $id;
-        return view('admin.menu.submenu', compact('title', 'th', 'urlDatatable', 'aksi', 'id_parent'));
+        return view('admin.menu.submenu', compact('title', 'th', 'urlDatatable', 'aksi', 'id_parent', 'level'));
     }
     public function aksi(Request $request)
     {

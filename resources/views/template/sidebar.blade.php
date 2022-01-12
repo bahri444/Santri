@@ -11,7 +11,7 @@
     <!-- Brand Logo -->
     <a href="{{ route('dashboard') }}" class="brand-link">
         <img src="{{ asset('assets') }}/dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-        <span class="brand-text font-weight-light">SPK</span>
+        <span class="brand-text font-weight-light">Disposisi Surat</span>
     </a>
 
     <!-- Sidebar -->
@@ -67,7 +67,7 @@
 
                 @else
                 <li class="nav-item">
-                    <a href="{{ route($m->link) }}" class="nav-link">
+                    <a href="{{ route($m->link) }}" class="nav-link @if($segment == $m->link) active @endif">
                         <i class="nav-icon fas {{$m->icon}}"></i>
                         <p>
                             {{$m->title}}

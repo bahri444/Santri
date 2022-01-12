@@ -50,6 +50,7 @@
 
 @section('script')
 <script>
+    @if ($level->can_edit)
     $(document).ready(function(){
         $('#data').on('change','input',function(){
             let val=$(this).val();
@@ -59,6 +60,7 @@
             })
         })
     });
+    @endif
 </script>
 @endsection
 

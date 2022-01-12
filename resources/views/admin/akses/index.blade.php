@@ -52,9 +52,11 @@
                                             @endforeach
                                         </ol>
                                     </td>
+                                    @if ($level->can_edit)
                                     <td>
                                         <a href="{{ route('akses.edit',$r->id) }}" class="btn btn-warning"><i class="fas fa-edit"></i></a>
                                     </td>
+                                    @endif
                                 </tr>
                             @endforeach
                         </tbody>

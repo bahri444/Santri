@@ -22,19 +22,33 @@ class UserController extends Controller
                     return $aktif;
                 })
                 ->addColumn('action', function ($row) {
-                    $btn = "<button data-id='$row->id' data-role='$row->role' data-username='$row->username' data-role_id='$row->role_id' data-is_active='$row->is_active' class='edit btn btn-warning btn-sm m-1'><i class='fas fa-edit'></i></button>";
-                    $btn .= "<button data-id='$row->id' class='hapus btn btn-danger btn-sm m-1'><i class='fas fa-trash'></i></button>";
+                    $role = $this->role();
+                    $btn = '';
+                    if ($role->can_edit && $role->can_delete) {
+                        $btn = "<button data-id='$row->id' data-role='$row->role' data-username='$row->username' data-role_id='$row->role_id' data-is_active='$row->is_active' class='edit btn btn-warning btn-sm m-1'><i class='fas fa-edit'></i></button>";
+                        $btn .= "<button data-id='$row->id' class='hapus btn btn-danger btn-sm m-1'><i class='fas fa-trash'></i></button>";
+                    } else if ($role->can_edit) {
+                        $btn = "<button data-id='$row->id' data-role='$row->role' data-username='$row->username' data-role_id='$row->role_id' data-is_active='$row->is_active' class='edit btn btn-warning btn-sm m-1'><i class='fas fa-edit'></i></button>";
+                    } else if ($role->can_delete) {
+                        $btn = "<button data-id='$row->id' class='hapus btn btn-danger btn-sm m-1'><i class='fas fa-trash'></i></button>";
+                    }
                     return $btn;
                 })
                 ->rawColumns(['action'])
                 ->make(true);
         }
         $title = 'user';
-        $th = ['No', 'Username', 'Role', 'Aktif', 'Aksi'];
+        $level = $this->role();
+        $th = [];
+        if ($level->can_edit || $level->can_delete)
+            $th = ['No', 'Username', 'Role', 'Aktif', 'Aksi'];
+        else
+            $th = ['No', 'Username', 'Role', 'Aktif'];
+
         $urlDatatable = route('user');
         $aksi = route('user.aksi');
         $role = Role::all();
-        return view('admin.user.index', compact('title', 'th', 'urlDatatable', 'aksi', 'role'));
+        return view('admin.user.index', compact('title', 'th', 'urlDatatable', 'aksi', 'role', 'level'));
     }
     public function aksi(Request $request)
     {

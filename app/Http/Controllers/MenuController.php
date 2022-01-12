@@ -20,18 +20,31 @@ class MenuController extends Controller
                     return $btn;
                 })
                 ->addColumn('action', function ($row) {
-                    $btn = "<button data-id='$row->id' data-title='$row->title' data-icon='$row->icon' data-link='$row->link' class='edit btn btn-warning btn-sm m-1'><i class='fas fa-edit'></i></button>";
-                    $btn .= "<button data-id='$row->id' class='hapus btn btn-danger btn-sm m-1'><i class='fas fa-trash'></i></button>";
+                    $role = $this->role();
+                    $btn = '';
+                    if ($role->can_edit && $role->can_delete) {
+                        $btn = "<button data-id='$row->id' data-title='$row->title' data-icon='$row->icon' data-link='$row->link' class='edit btn btn-warning btn-sm m-1'><i class='fas fa-edit'></i></button>";
+                        $btn .= "<button data-id='$row->id' class='hapus btn btn-danger btn-sm m-1'><i class='fas fa-trash'></i></button>";
+                    } elseif ($role->can_edit) {
+                        $btn = "<button data-id='$row->id' data-title='$row->title' data-icon='$row->icon' data-link='$row->link' class='edit btn btn-warning btn-sm m-1'><i class='fas fa-edit'></i></button>";
+                    } elseif ($role->can_delete) {
+                        $btn = "<button data-id='$row->id' class='hapus btn btn-danger btn-sm m-1'><i class='fas fa-trash'></i></button>";
+                    }
                     return $btn;
                 })
                 ->rawColumns(['action', 'submenu'])
                 ->make(true);
         }
+        $level = $this->role();
         $title = 'menu';
-        $th = ['No', 'Title', 'Icon', 'Link', 'Submenu', 'Urutan', 'Aksi'];
+        $th = [];
+        if ($level->can_edit || $level->can_delete)
+            $th = ['No', 'Title', 'Icon', 'Link', 'Submenu', 'Urutan', 'Aksi'];
+        else
+            $th = ['No', 'Title', 'Icon', 'Link', 'Submenu', 'Urutan'];
         $urlDatatable = route('menu');
         $aksi = route('menu.aksi');
-        return view('admin.menu.index', compact('title', 'th', 'urlDatatable', 'aksi'));
+        return view('admin.menu.index', compact('title', 'th', 'urlDatatable', 'aksi', 'level'));
     }
     public function aksi(Request $request)
     {

@@ -25,7 +25,9 @@
 
         <div class="card">
             <div class="card-body">
+                @if ($level->can_add)
                 <button type="button" id="tambah" class="btn btn-primary mb-3">Tambah Data</button>
+                @endif
                 <div class="table-responsive">
                     <table class="table w-100">
                         <thead>
@@ -117,15 +119,18 @@ $(document).ready(function(){
               {data: 'can_add', name: 'can_add'},
               {data: 'can_edit', name: 'can_edit'},
               {data: 'can_delete', name: 'can_delete'},
+              @if ($level->can_edit || $level->can_delete)
               {
                   data: 'action',
                   name: 'action',
                   orderable: true,
                   searchable: true
               },
+              @endif
           ]
       });
     });
+    @if ($level->can_add)
     $('#tambah').click(()=>{
         $('#modal').find('.modal-title').html('Tambah Data');
         $('#modal').find('.modal-body').html(form);
@@ -133,6 +138,8 @@ $(document).ready(function(){
         $('#modal').find('#btn').html('Tambah');
         $('#modal').modal('show')
     });
+    @endif
+    @if ($level->can_edit)
     $('#data').on('click','.edit',function(){
         $('#modal').find('.modal-title').html('Edit Data');
         $('#modal').find('.modal-body').html(form);
@@ -145,6 +152,8 @@ $(document).ready(function(){
         $('#modal').find('#btn').html('Simpan');
         $('#modal').modal('show')
     })
+    @endif
+    @if($level->can_delete)
     $('#data').on('click','.hapus',function(){
         $('#modal').find('.modal-body').html(`
         <input type="hidden" name="aksi" value="hapus" />
@@ -155,6 +164,8 @@ $(document).ready(function(){
         $('#modal').find('#btn').html('Hapus');
         $('#modal').modal('show')
     })
+    @endif
+    @if ($level->can_add || $level->can_edit || $level->can_delete)
     $('#form').submit(function(e){
         e.preventDefault()
         let data = new FormData(this)
@@ -165,6 +176,7 @@ $(document).ready(function(){
             table.ajax.reload()
         })
     })
+    @endif
 
 })
   </script>

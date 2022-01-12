@@ -25,18 +25,31 @@ class RoleController extends Controller
                     return $row->can_delete ? 'Ya' : 'Tidak';
                 })
                 ->addColumn('action', function ($row) {
-                    $btn = "<button data-id='$row->id' data-role='$row->role' data-can_edit='$row->can_edit' data-can_add='$row->can_add' data-can_delete='$row->can_delete' class='edit btn btn-warning btn-sm m-1'><i class='fas fa-edit'></i></button>";
-                    $btn .= "<button data-id='$row->id' class='hapus btn btn-danger btn-sm m-1'><i class='fas fa-trash'></i></button>";
+                    $role = $this->role();
+                    $btn = '';
+                    if ($role->can_edit && $role->can_delete) {
+                        $btn = "<button data-id='$row->id' data-role='$row->role' data-can_edit='$row->can_edit' data-can_add='$row->can_add' data-can_delete='$row->can_delete' class='edit btn btn-warning btn-sm m-1'><i class='fas fa-edit'></i></button>";
+                        $btn .= "<button data-id='$row->id' class='hapus btn btn-danger btn-sm m-1'><i class='fas fa-trash'></i></button>";
+                    } elseif ($role->can_edit) {
+                        $btn = "<button data-id='$row->id' data-role='$row->role' data-can_edit='$row->can_edit' data-can_add='$row->can_add' data-can_delete='$row->can_delete' class='edit btn btn-warning btn-sm m-1'><i class='fas fa-edit'></i></button>";
+                    } elseif ($role->can_delete) {
+                        $btn = "<button data-id='$row->id' class='hapus btn btn-danger btn-sm m-1'><i class='fas fa-trash'></i></button>";
+                    }
                     return $btn;
                 })
                 ->rawColumns(['action', 'can_add', 'can_edit', 'can_delete'])
                 ->make(true);
         }
         $title = 'role';
-        $th = ['No', 'Role', 'Bisa Menambah', 'Bisa Mengedit', 'Bisa menghapus', 'Aksi'];
+        $th = [];
+        $level = $this->role();
+        if ($level->can_edit || $level->can_delete)
+            $th = ['No', 'Role', 'Bisa Menambah', 'Bisa Mengedit', 'Bisa menghapus', 'Aksi'];
+        else
+            $th = ['No', 'Role', 'Bisa Menambah', 'Bisa Mengedit', 'Bisa menghapus'];
         $urlDatatable = route('role');
         $aksi = route('role.aksi');
-        return view('admin.role.index', compact('title', 'th', 'urlDatatable', 'aksi'));
+        return view('admin.role.index', compact('title', 'th', 'urlDatatable', 'aksi', 'level'));
     }
     public function aksi(Request $request)
     {

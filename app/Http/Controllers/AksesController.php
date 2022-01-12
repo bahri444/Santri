@@ -13,16 +13,22 @@ class AksesController extends Controller
     public function index(Request $request)
     {
         $title = 'role';
-        $th = ['No', 'Role', 'Menu', 'Aksi'];
+        $level = $this->role();
+        $th = [];
+        if ($level->can_edit || $level->can_delete)
+            $th = ['No', 'Role', 'Menu', 'Aksi'];
+        else
+            $th = ['No', 'Role', 'Menu'];
         $role = Role::all();
-        return view('admin.akses.index', compact('title', 'th', 'role'));
+        return view('admin.akses.index', compact('title', 'th', 'role', 'level'));
     }
     public function edit(Request $request, $id)
     {
+        $level = $this->role();
         $title = 'akses edit';
         $menu = Menu::whereId_parent(0)->get();
         $role = AksesMenu::whereRole_id($id)->get();
-        return view('admin.akses.edit', compact('menu', 'id', 'title', 'role'));
+        return view('admin.akses.edit', compact('menu', 'id', 'title', 'role', 'level'));
     }
     public function check(Request $request, $id)
     {

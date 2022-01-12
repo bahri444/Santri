@@ -9,8 +9,6 @@
             <a href="{{ route('dashboard') }}" class="nav-link">Home</a>
         </li>
     </ul>
-    <h5 class="text-light d-none d-sm-inline-block mx-auto">SPK Pemilihan Lokasi Pembangunan Perumahan</h5>
-
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
         <!-- Notifications Dropdown Menu -->
