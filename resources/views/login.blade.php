@@ -22,7 +22,7 @@
                     <div class="col-sm-12 col-md-6 col-lg-6">
                         <div class="card shadows">
                             <div class="card-body">
-                                <h3>Login</h3>
+                                <h3>Aplikasi Pembayaran Catering Santri</h3>
                                 <small>Silahkan login untuk menggunakan aplikasi</small>
                                 <hr>
                                 <form action="{{ route('ceklogin') }}" method="post">

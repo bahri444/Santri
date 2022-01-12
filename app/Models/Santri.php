@@ -15,6 +15,7 @@ class Santri extends Model
         'alamat',
         'tempat_lahir',
         'tanggal_lahir',
-        'jenis_kelamin'
+        'jenis_kelamin',
+        'foto'
     ];
 }

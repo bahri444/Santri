@@ -40,18 +40,15 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
             Route::get('/edit/{id}', [\App\Http\Controllers\AksesController::class, 'edit'])->name('akses.edit');
             Route::post('/check/{id}', [\App\Http\Controllers\AksesController::class, 'check'])->name('akses.check');
         });
-        Route::prefix('opd')->group(function () {
-            Route::get('/', [\App\Http\Controllers\OpdController::class, 'index'])->name('opd');
-            Route::post('/aksi', [\App\Http\Controllers\OpdController::class, 'aksi'])->name('opd.aksi');
+        Route::prefix('santri')->group(function () {
+            Route::get('/', [\App\Http\Controllers\SantriController::class, 'index'])->name('santri');
+            Route::post('/aksi', [\App\Http\Controllers\SantriController::class, 'aksi'])->name('santri.aksi');
+            Route::get('/detail/{id}', [\App\Http\Controllers\SantriController::class, 'detail'])->name('santri.detail');
         });
-        Route::prefix('jabatan')->group(function () {
-            Route::get('/', [\App\Http\Controllers\JabatanController::class, 'index'])->name('jabatan');
-            Route::post('/aksi', [\App\Http\Controllers\JabatanController::class, 'aksi'])->name('jabatan.aksi');
-        });
-        Route::prefix('pegawai')->group(function () {
-            Route::get('/', [\App\Http\Controllers\PegawaiController::class, 'index'])->name('pegawai');
-            Route::post('/aksi', [\App\Http\Controllers\PegawaiController::class, 'aksi'])->name('pegawai.aksi');
-            Route::get('/detail/{id}', [\App\Http\Controllers\PegawaiController::class, 'detail'])->name('pegawai.detail');
+        Route::prefix('ruangan')->group(function () {
+            Route::get('/', [\App\Http\Controllers\RuanganController::class, 'index'])->name('ruangan');
+            Route::post('/aksi', [\App\Http\Controllers\RuanganController::class, 'aksi'])->name('ruangan.aksi');
+            Route::get('/detail/{id}', [\App\Http\Controllers\RuanganController::class, 'detail'])->name('ruangan.detail');
         });
     });
 });

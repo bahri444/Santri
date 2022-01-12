@@ -21,6 +21,7 @@ class CreateSantrisTable extends Migration
             $table->string('tempat_lahir');
             $table->date('tanggal_lahir');
             $table->enum('jenis_kelamin', ['L', 'P']);
+            $table->string('foto');
             $table->timestamps();
         });
     }
