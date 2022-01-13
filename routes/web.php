@@ -49,6 +49,20 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
             Route::get('/', [\App\Http\Controllers\RuanganController::class, 'index'])->name('ruangan');
             Route::post('/aksi', [\App\Http\Controllers\RuanganController::class, 'aksi'])->name('ruangan.aksi');
             Route::get('/detail/{id}', [\App\Http\Controllers\RuanganController::class, 'detail'])->name('ruangan.detail');
+            Route::get('/{id}/santri', [\App\Http\Controllers\RuanganSantriController::class, 'index'])->name('ruangan.santri');
+            Route::post('/{id}/santri/aksi', [\App\Http\Controllers\RuanganSantriController::class, 'aksi'])->name('ruangan.santri.aksi');
+            Route::get('/{id}/getSantri', [\App\Http\Controllers\RuanganSantriController::class, 'getSantri'])->name('ruangan.santri.getSantri');
+            Route::get('/{id}/getRuangan', [\App\Http\Controllers\RuanganSantriController::class, 'getRuangan'])->name('ruangan.santri.getRuangan');
+        });
+        Route::prefix('catering')->group(function () {
+            Route::get('/', [\App\Http\Controllers\RuanganController::class, 'index'])->name('catering');
+            Route::post('/aksi', [\App\Http\Controllers\RuanganController::class, 'aksi'])->name('catering.aksi');
+            Route::get('/detail/{id}', [\App\Http\Controllers\RuanganController::class, 'detail'])->name('catering.detail');
+        });
+        Route::prefix('pengeluaran')->group(function () {
+            Route::get('/', [\App\Http\Controllers\RuanganController::class, 'index'])->name('pengeluaran');
+            Route::post('/aksi', [\App\Http\Controllers\RuanganController::class, 'aksi'])->name('pengeluaran.aksi');
+            Route::get('/detail/{id}', [\App\Http\Controllers\RuanganController::class, 'detail'])->name('pengeluaran.detail');
         });
     });
 });

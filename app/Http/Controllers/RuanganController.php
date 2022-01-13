@@ -15,6 +15,9 @@ class RuanganController extends Controller
             $data = Ruangan::all();
             return DataTables::of($data)
                 ->addIndexColumn()
+                ->addColumn('santri', function ($row) {
+                    return "<a href='" . route('ruangan.santri', $row->id) . "' class='btn btn-info'>Data Santri</a>";
+                })
                 ->addColumn('action', function ($row) {
                     $role = $this->role();
                     $btn = '';
@@ -28,16 +31,16 @@ class RuanganController extends Controller
                     }
                     return $btn;
                 })
-                ->rawColumns(['action'])
+                ->rawColumns(['action', 'santri'])
                 ->make(true);
         }
-        $title = 'Santri';
+        $title = 'ruangan';
         $th = [];
         $level = $this->role();
         if ($level->can_edit || $level->can_delete)
-            $th = ['No', 'Kode Ruangan', 'Nama Ruangan', 'Aksi'];
+            $th = ['No', 'Kode Ruangan', 'Nama Ruangan', 'Data Santri', 'Aksi'];
         else
-            $th = ['No', 'Kode Ruangan', 'Nama Ruangan'];
+            $th = ['No', 'Kode Ruangan', 'Nama Ruangan', 'Data Santri'];
         $urlDatatable = route('ruangan');
         $aksi = route('ruangan.aksi');
         return view('admin.ruangan.index', compact('title', 'th', 'urlDatatable', 'aksi', 'level'));

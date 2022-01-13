@@ -6,12 +6,13 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0">Ruangan</h1>
+                <h1 class="m-0">Data Santri</h1>
             </div><!-- /.col -->
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="{{route('dashboard')}}">Home</a></li>
-                    <li class="breadcrumb-item active">Ruangan</li>
+                    <li class="breadcrumb-item"><a href="{{ route('ruangan') }}">Ruangan</a></li>
+                    <li class="breadcrumb-item active">Data Santri</li>
                 </ol>
             </div><!-- /.col -->
         </div><!-- /.row -->
@@ -25,8 +26,9 @@
 
         <div class="card">
             <div class="card-body">
+                <a href="{{ route('ruangan') }}" class="btn btn-info mb-3"><i class="fas fa-arrow-left"></i> Kembali</a>
                 @if ($level->can_add)
-                <button type="button" id="tambah" class="btn btn-primary mb-3">Tambah Data</button>
+                <button type="button" id="tambah" class="btn btn-primary mb-3">Tambah Santri</button>
                 @endif
                 <div class="table-responsive">
                     <table class="table w-100">
@@ -62,16 +64,6 @@
         </div>
         <form id="form">
             <div class="modal-body">
-                <input type="hidden" name="aksi" id="aksi">
-                <input type="hidden" name="id" id="id">
-                <div class="form-group">
-                    <label for="kode_ruangan">Kode Ruangan</label>
-                    <input type="text" class="form-control" name="kode_ruangan" id="kode_ruangan" placeholder="Masukkan Kode Ruangan">
-                </div>
-                <div class="form-group">
-                    <label for="nama_ruangan">Nama Ruangan</label>
-                    <input type="text" class="form-control" name="nama_ruangan" id="nama_ruangan" placeholder="Masukkan Nama Ruangan">
-                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
@@ -98,9 +90,8 @@ $(document).ready(function(){
           ajax: "{{ $urlDatatable }}",
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex'},
-              {data: 'kode_ruangan', name: 'kode_ruangan'},
-              {data: 'nama_ruangan', name: 'nama_ruangan'},
-              {data: 'santri', name: 'santri'},
+              {data: 'nis', name: 'nis'},
+              {data: 'nama', name: 'nama'},
               @if ($level->can_edit || $level->can_delete)
               {
                   data: 'action',
@@ -114,34 +105,64 @@ $(document).ready(function(){
     });
     @if ($level->can_add)
     $('#tambah').click(()=>{
+        $('#modal').find('.modal-body').html(`
+        <input type="hidden" name="aksi" id="aksi">
+                <input type="hidden" name="id" id="id">
+                <div class="form-group">
+                    <label for="santri_id">Pilih Santri</label>
+                    <select name="santri_id[]" id="santri_id" multiple class="select2 w-100" data-placeholder="Pilih Santri">
+                        <option value="">Pilih Santri</option>
+                    </select>
+                </div>
+        `);
+        axios.get(`{{ $getSantri }}`)
+        .then(res=>{
+            let html=''
+            res.data.map((row)=>{
+                html+=`<option value="${row.id}">${row.nis} ${row.nama}</option>`
+            })
+            $('#santri_id').html(html)
+        })
         $('#modal').find('.modal-title').html('Tambah Data');
-        $('#modal').find('.modal-body').html(form);
         $('#modal').find('#aksi').val('tambah');
         $('#modal').find('#btn').html('Tambah');
+        $('#modal').find('.select2').select2({
+        theme: 'bootstrap4'
+        })
         $('#modal').modal('show')
     });
     @endif
     @if ($level->can_edit)
     $('#data').on('click','.edit',function(){
-        $('#modal').find('.modal-body').html(form);
-        axios.get(`{{ url('/admin/ruangan/detail') }}/${$(this).data('id')}`)
+        $('#modal').find('.modal-body').html(`
+        <input type="hidden" name="aksi" id="aksi">
+                <input type="hidden" name="id" id="id">
+                <input type="hidden" name="santri_id" id="santri_id">
+                <div class="form-group">
+                    <label for="ruangan_id">Pindah Ruangan</label>
+                    <select name="ruangan_id" id="ruangan_id" class="select2 w-100" data-placeholder="Pilih Ruangan">
+                        <option value="">Pilih Ruangan</option>
+                    </select>
+                </div>
+        `);
+        axios.get(`{{ $getRuangan }}`)
         .then(res=>{
-        const {data}=res;
-        $('#modal').find('#id').val(data.id);
-        $('#modal').find('#kode_ruangan').val(data.kode_ruangan);
-        $('#modal').find('#nama_ruangan').val(data.nama_ruangan);
+            let html=''
+            res.data.map((row)=>{
+                html+=`<option value="${row.id}">${row.kode_ruangan} ${row.nama_ruangan}</option>`
+            })
+            $('#ruangan_id').html(html)
+        })
+        $('#modal').find('#id').val($(this).data('id'));
+        $('#modal').find('#santri_id').val($(this).data('santri_id'));
+        $('#modal').find('#ruangan_id').val($(this).data('ruangan_id'));
         $('#modal').find('.modal-title').html('Edit Data');
         $('#modal').find('#aksi').val('edit');
         $('#modal').find('#btn').html('Simpan');
+        $('#modal').find('.select2').select2({
+        theme: 'bootstrap4'
+        })
         $('#modal').modal('show')
-        })
-        .catch(err=>{
-            if(err.response.status===404){
-                toastr[err.response.data.status](err.response.data.pesan)
-                table.ajax.reload()
-            }
-        })
-
     })
     @endif
     @if($level->can_delete)
