@@ -31,6 +31,7 @@
     <!-- jQuery -->
     <!-- Bootstrap -->
     <script src="{{ asset('assets') }}/axios.js"></script>
+    <script src="{{ asset('assets') }}/autoNumeric.js"></script>
     <script src="{{ asset('assets') }}/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('assets') }}/plugins/toastr/toastr.min.js"></script>
     <!-- overlayScrollbars -->
@@ -39,6 +40,7 @@
     <script src="{{ asset('assets') }}/plugins/select2/js/select2.full.min.js"></script>
     <script src="{{ asset('assets') }}/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
     <!-- AdminLTE App -->
+
     <script src="{{ asset('assets') }}/dist/js/adminlte.js"></script>
     <script>
         $(document).ready(function(){

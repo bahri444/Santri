@@ -16,4 +16,9 @@ class Controller extends BaseController
     {
         return Role::whereId(Auth::user()->role_id)->first();
     }
+    public function rupiah($angka)
+    {
+        $hasil_rupiah = "Rp. " . number_format($angka, 2, ',', '.');
+        return $hasil_rupiah;
+    }
 }

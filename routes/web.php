@@ -54,15 +54,21 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
             Route::get('/{id}/getSantri', [\App\Http\Controllers\RuanganSantriController::class, 'getSantri'])->name('ruangan.santri.getSantri');
             Route::get('/{id}/getRuangan', [\App\Http\Controllers\RuanganSantriController::class, 'getRuangan'])->name('ruangan.santri.getRuangan');
         });
-        Route::prefix('catering')->group(function () {
-            Route::get('/', [\App\Http\Controllers\RuanganController::class, 'index'])->name('catering');
-            Route::post('/aksi', [\App\Http\Controllers\RuanganController::class, 'aksi'])->name('catering.aksi');
-            Route::get('/detail/{id}', [\App\Http\Controllers\RuanganController::class, 'detail'])->name('catering.detail');
+        Route::prefix('tagihan')->group(function () {
+            Route::get('/', [\App\Http\Controllers\TagihanController::class, 'index'])->name('tagihan');
+            Route::post('/aksi', [\App\Http\Controllers\TagihanController::class, 'aksi'])->name('tagihan.aksi');
+        });
+        Route::prefix('pembayaran')->group(function () {
+            Route::get('/', [\App\Http\Controllers\PembayaranController::class, 'index'])->name('pembayaran');
+            Route::post('/aksi', [\App\Http\Controllers\PembayaranController::class, 'aksi'])->name('pembayaran.aksi');
         });
         Route::prefix('pengeluaran')->group(function () {
-            Route::get('/', [\App\Http\Controllers\RuanganController::class, 'index'])->name('pengeluaran');
-            Route::post('/aksi', [\App\Http\Controllers\RuanganController::class, 'aksi'])->name('pengeluaran.aksi');
-            Route::get('/detail/{id}', [\App\Http\Controllers\RuanganController::class, 'detail'])->name('pengeluaran.detail');
+            Route::get('/', [\App\Http\Controllers\PengeluaranController::class, 'index'])->name('pengeluaran');
+            Route::post('/aksi', [\App\Http\Controllers\PengeluaranController::class, 'aksi'])->name('pengeluaran.aksi');
+        });
+        Route::prefix('setting')->group(function () {
+            Route::get('/', [\App\Http\Controllers\PengeluaranController::class, 'index'])->name('setting');
+            Route::post('/aksi', [\App\Http\Controllers\PengeluaranController::class, 'aksi'])->name('setting.aksi');
         });
     });
 });
