@@ -6,12 +6,12 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0">Tagihan</h1>
+                <h1 class="m-0">Pembayaran Santri</h1>
             </div><!-- /.col -->
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="{{route('dashboard')}}">Home</a></li>
-                    <li class="breadcrumb-item active">Tagihan</li>
+                    <li class="breadcrumb-item active">Pembayaran Santri</li>
                 </ol>
             </div><!-- /.col -->
         </div><!-- /.row -->
@@ -51,7 +51,7 @@
 
 {{-- modal --}}
 
-<div class="modal" tabindex="-1" id="modal" role="dialog">
+<div class="modal"  id="modal" role="dialog">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -65,18 +65,29 @@
                 <input type="hidden" name="aksi" id="aksi">
                 <input type="hidden" name="id" id="id">
                 <div class="form-group">
-                    <label for="nama_tagihan">Nama Pembayaran</label>
-                    <input type="text" class="form-control" placeholder="Masukkan Nama Tagihan" name="nama_tagihan" id="nama_tagihan" required>
+                    <label for="santri_id">Nama Santri</label>
+                    <select name="santri_id" id="santri_id" class="select2 form-control" required>
+                        <option value="">Pilih Santri</option>
+                        @foreach ($santri as $s)
+                            <option value="{{ $s->id }}">{{$s->nis}} {{ $s->nama }}</option>
+                        @endforeach
+                    </select>
                 </div>
                 <div class="form-group">
-                    <label for="rupiah">Tagihan</label>
-                    <input type="text" class="form-control" id="rupiah" autocomplete="off" placeholder="Masukkan Tagihan" required>
-                    <input type="hidden" name="tagihan" id="tagihan" >
+                    <label for="tagihan_id">Tagihan</label>
+                    <select name="tagihan_id" id="Tagihan" class="select2 form-control" required>
+                        <option value="">Pilih Tagihan</option>
+                        @foreach ($tagihan as $s)
+                            <option value="{{ $s->id }}">{{$s->nama_tagihan}} {{ $s->tagihan }}</option>
+                        @endforeach
+                    </select>
                 </div>
                 <div class="form-group">
-                    <label for="keterangan">Keterangan</label>
-                    <input type="text" class="form-control" placeholder="Masukkan Keterangan" name="keterangan" id="keterangan" required>
+                    <label for="rupiah">Pembayaran</label>
+                    <input type="text" name="rupiah" id="rupiah" class="form-control">
+                    <input type="hidden" id="pembayaran" name="pembayaran">
                 </div>
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
@@ -94,6 +105,11 @@
 @section('script')
 <script type="text/javascript">
 $(document).ready(function(){
+    function select2(){
+        $('#modal').find('.select2').select2({
+        theme: 'bootstrap4'
+        })
+    }
     function rupiah(){
         let rp = new AutoNumeric('#rupiah', { currencySymbol : 'Rp. ',decimalCharacter:',',decimalPlaces:'2',digitGroupSeparator: '.' });
 		$('#rupiah').keyup(function() {
@@ -106,12 +122,19 @@ $(document).ready(function(){
     table = $('.table').DataTable({
           processing: true,
           serverSide: true,
-          ajax: "{{ $urlDatatable }}",
+          ajax: {
+            url:`{{ $urlDatatable }}`,
+            type:'GET',
+
+              },
           columns: [
               {data: 'DT_RowIndex', name: 'DT_RowIndex'},
-              {data: 'nama_tagihan', name: 'nama_tagihan'},
+              {data: 'nis', name: 'nis'},
+              {data: 'nama', name: 'nama'},
               {data: 'rupiah', name: 'rupiah'},
-              {data: 'keterangan', name: 'keterangan'},
+              {data: 'pembayaran', name: 'pembayaran'},
+              {data: 'sisa', name: 'sisa'},
+              {data: 'status', name: 'status'},
               @if ($level->can_edit || $level->can_delete)
               {
                   data: 'action',
@@ -128,6 +151,7 @@ $(document).ready(function(){
         $('#modal').find('.modal-title').html('Tambah Data');
         $('#modal').find('.modal-body').html(form);
         rupiah()
+        select2()
         $('#modal').find('#aksi').val('tambah');
         $('#modal').find('#btn').html('Tambah');
         $('#modal').modal('show')

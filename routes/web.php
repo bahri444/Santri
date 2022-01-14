@@ -67,8 +67,8 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
             Route::post('/aksi', [\App\Http\Controllers\PengeluaranController::class, 'aksi'])->name('pengeluaran.aksi');
         });
         Route::prefix('setting')->group(function () {
-            Route::get('/', [\App\Http\Controllers\PengeluaranController::class, 'index'])->name('setting');
-            Route::post('/aksi', [\App\Http\Controllers\PengeluaranController::class, 'aksi'])->name('setting.aksi');
+            Route::get('/', [\App\Http\Controllers\SettingController::class, 'index'])->name('setting');
+            Route::post('/aksi', [\App\Http\Controllers\SettingController::class, 'aksi'])->name('setting.aksi');
         });
     });
 });
