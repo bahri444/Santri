@@ -1,69 +1,68 @@
 @extends('template.admin')
-@section('konten')
-<!-- Small boxes (Stat box) -->
-<div class="row">
-    @if(Auth::user()->level == 'admin')
-    <div class="col-lg-3 col-6">
-        <!-- small box -->
-        <div class="small-box bg-info">
-            <div class="inner">
-                <h3>{{ $user }}</h3>
-
-                <p>User</p>
+@section('title',$title)
+@section('content')
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Dashboard</h1>
             </div>
-            <div class="icon">
-                <i class="ion ion-person"></i>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">Dashboard</li>
+                </ol>
             </div>
-            <a href="{{route('user')}}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
         </div>
     </div>
-    @endif
-    <!-- ./col -->
-    <div class="col-lg-3 col-6">
-        <!-- small box -->
-        <div class="small-box bg-success">
-            <div class="inner">
-                <h3>{{ $santri }}</h3>
-
-                <p>Santri</p>
-            </div>
-            <div class="icon">
-                <i class="ion ion-android-people"></i>
-            </div>
-            <a href="{{ route('santri') }}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-        </div>
-    </div>
-    <!-- ./col -->
-    <div class="col-lg-3 col-6">
-        <!-- small box -->
-        <div class="small-box bg-warning">
-            <div class="inner">
-                <h3>{{ $ruangan }}</h3>
-
-                <p>Ruangan</p>
-            </div>
-            <div class="icon">
-                <i class="ion ion-android-home"></i>
-            </div>
-            <a href="{{ route('ruangan') }}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-        </div>
-    </div>
-    <!-- ./col -->
-    <div class="col-lg-3 col-6">
-        <!-- small box -->
-        <div class="small-box bg-danger">
-            <div class="inner">
-                <h3>{{ $pembayaran }}</h3>
-
-                <p>Catering Minggu ini</p>
-            </div>
-            <div class="icon">
-                <i class="ion ion-android-clipboard"></i>
-            </div>
-            <a href="{{ route('pembayaran') }}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-        </div>
-    </div>
-    <!-- ./col -->
 </div>
-<!-- /.row (main row) -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12 col-sm-6 col-md-3">
+                <div class="info-box">
+                    <span class="info-box-icon bg-info elevation-1"><i class="fas fa-users"></i></span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">Santri</span>
+                        <span class="info-box-number">0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-3">
+                <div class="info-box mb-3">
+                    <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-building"></i></span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">Ruangan</span>
+                        <span class="info-box-number">0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="clearfix hidden-md-up"></div>
+
+            <div class="col-12 col-sm-6 col-md-3">
+                <div class="info-box mb-3">
+                    <span class="info-box-icon bg-success elevation-1"><i class="fas fa-list"></i></span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">Pembayaran Minggu ini</span>
+                        <span class="info-box-number">0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-3">
+                <div class="info-box mb-3">
+                    <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-list"></i></span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">Pembayaran Bulan ini</span>
+                        <span class="info-box-number">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
 @endsection

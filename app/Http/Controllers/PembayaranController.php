@@ -2,105 +2,122 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Pembayaran;
-use DataTables;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
-use mysqli;
-use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\YearFrac;
-use PhpOffice\PhpSpreadsheet\Calculation\MathTrig\Sum;
-use PHPUnit\TextUI\XmlConfiguration\Group;
+use App\Models\Tagihan;
+use App\Models\Santri;
+use App\Models\Pembayaran;
+use Yajra\DataTables\Facades\DataTables;
 
 //Pembayaran::withCount('tgl_bayar')->groupBy('santri_id');
 
 class PembayaranController extends Controller
 {
-    /**
-     * Menampilkan halaman tabel user
-     *
-     * @return \Illuminate\Http\Response
-     */
+    //
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $datas = Pembayaran::all();
-            return DataTables::of($datas)
+            $data = Pembayaran::select('pembayaran.*', 'tagihan.nama_tagihan', 'tagihan.tagihan', 'santri.nis', 'santri.nama')
+                ->join('tagihan', 'pembayaran.tagihan_id', '=', 'tagihan.id')
+                ->join('santri', 'pembayaran.santri_id', '=', 'santri.id')
+                ->get();
+            return DataTables::of($data)
                 ->addIndexColumn()
-
-                ->addColumn('total', function ($row) {
-                    return ($row->groupBy('santri_id')->sum('jml_bayar'));
+                ->addColumn('pembayaran', function ($row) {
+                    return $this->rupiah($row->pembayaran);
+                })
+                ->addColumn('rupiah', function ($row) {
+                    return $this->rupiah($row->tagihan);
+                })
+                ->addColumn('sisa', function ($row) {
+                    return $this->rupiah(0);
+                })
+                ->addColumn('status', function ($row) {
+                    return '';
                 })
                 ->addColumn('action', function ($row) {
-                    $btn = "<button type='button' data-id='$row->id' data-santri_id='$row->santri_id' data-jml_bayar='$row->jml_bayar'  data-tgl_bayar='$row->tgl_bayar' class='edit btn btn-sm btn-warning btn-sm' > <i class='fas fa-edit'></i></button>";
-                    $btn .= "<button type='button' data-id='$row->id' class='hapus btn btn-sm btn-danger m-1'> <i class='fas fa-trash'></i></button>";
+                    $role = $this->role();
+                    $btn = '';
+                    if ($role->can_edit && $role->can_delete) {
+                        $btn = "<button data-id='$row->id' data-nama_tagihan='$row->nama_tagihan' data-tagihan='$row->tagihan' data-keterangan='$row->keterangan' class='edit btn btn-warning btn-sm m-1'><i class='fas fa-edit'></i></button>";
+                        $btn .= "<button data-id='$row->id' class='hapus btn btn-danger btn-sm m-1'><i class='fas fa-trash'></i></button>";
+                    } elseif ($role->can_edit) {
+                        $btn = "<button data-id='$row->id' data-nama_tagihan='$row->nama_tagihan' data-tagihan='$row->tagihan' data-keterangan='$row->keterangan'  class='edit btn btn-warning btn-sm m-1'><i class='fas fa-edit'></i></button>";
+                    } elseif ($role->can_delete) {
+                        $btn = "<button data-id='$row->id' class='hapus btn btn-danger btn-sm m-1'><i class='fas fa-trash'></i></button>";
+                    }
                     return $btn;
                 })
-                ->rawColumns(['action', 'total'])
+                ->rawColumns(['action', 'rupiah', 'sisa', 'pembayaran', 'status'])
                 ->make(true);
         }
-        $data = [
-            'datatable' => route('pembayaran'),
-            'urlTambah' => route('pembayaran.tambah'),
-            'urlEdit' => route('pembayaran.edit'),
-            'urlHapus' => route('pembayaran.hapus'),
-
-        ];
-        return view('admin.pembayaran', $data);
+        $title = 'pembayaran';
+        $th = [];
+        $level = $this->role();
+        if ($level->can_edit || $level->can_delete)
+            $th = ['No', 'NIS', 'Nama Santri', 'Tagihan', 'Pembayaran', 'Sisa', 'status', 'Aksi'];
+        else
+            $th = ['No', 'NIS', 'Nama Santri', 'Tagihan', 'Pembayaran', 'Sisa', 'status',];
+        $urlDatatable = route('pembayaran');
+        $aksi = route('pembayaran.aksi');
+        $tagihan = Tagihan::latest()->get();
+        $santri = Santri::all();
+        return view('admin.pembayaran.index', compact('title', 'th', 'urlDatatable', 'aksi', 'level', 'tagihan', 'santri'));
     }
-    // public function Total_bayar($row)
-    // {
-    //     return ($row->sum('jml_bayar'));
-    // }
-    public function tambah(Request $request)
+    public function aksi(Request $request)
     {
-        $validate = Validator::make($request->all(), [
-            'santri_id' => 'required',
-            'jml_bayar' => 'required',
-            'tgl_bayar' => 'required',
-        ]);
-        if ($validate->fails()) {
-            return response()->json(['error' => $validate->errors()], 401);
+        $aksi = $request->aksi;
+        $data = [];
+        switch ($aksi) {
+            case 'tambah':
+                $data = $this->tambah($request);
+                break;
+            case 'edit':
+                $data = $this->edit($request);
+                break;
+            case 'hapus':
+                $data = $this->hapus($request);
+                break;
+            default:
+                $data = ['status' => 'error', 'status' => 'Aksi tidak ditemukan'];
+                break;
         }
-        $pembayaran = Pembayaran::create([
-            'santri_id' => $request->santri_id,
-            'jml_bayar' => $request->jml_bayar,
-            'tgl_bayar' => $request->tgl_bayar,
-        ]);
-        if ($pembayaran) {
-            return response()->json(['pesan' => 'data pembayaran berhasil di tambahkan'], 200);
-        } else {
-            return response()->json(['pesan' => 'data pembayaran gagal di tambahkan'], 500);
-        }
+        return response()->json($data);
     }
-    public function edit(Request $request)
+    private function tambah(Request $request)
     {
-        $validate = Validator::make($request->all(), [
-            'santri_id' => 'required',
-            'jml_bayar' => 'required',
-            'tgl_bayar' => 'required',
+        $role = Pembayaran::create([
+            'nama_tagihan' => $request->nama_tagihan,
+            'tagihan' => $request->tagihan,
+            'keterangan' => $request->keterangan
         ]);
-        if ($validate->fails()) {
-            return response()->json(['error' => $validate->errors()], 401);
-        }
-        $pembayaran = Pembayaran::whereId($request->id)->first();
-        if ($pembayaran) {
-            $pembayaran->santri_id = $request->santri_id;
-            $pembayaran->jml_bayar = $request->jml_bayar;
-            $pembayaran->tgl_bayar = $request->tgl_bayar;
-            $pembayaran->update();
-            return response()->json(['pesan' => 'data histori belanja berhasil di edit'], 200);
+        if ($role) {
+            return ['status' => 'success', 'pesan' => 'Data berhasil ditambah'];
         } else {
-            return response()->json(['pesan' => 'data histori belanja gagal di edit'], 404);
+            return ['status' => 'error', 'pesan' => 'Data gagal ditambah'];
         }
     }
-    public function hapus(Request $request)
+    private function edit(Request $request)
     {
-        $request = Pembayaran::whereId($request->id)->delete();
-        if ($request) {
-            return response()->json(['pesan' => 'Data berhasil di hapus'], 200);
+        $role = Pembayaran::whereId($request->id)->first();
+        if ($role) {
+            $role->update([
+                'nama_tagihan' => $request->nama_tagihan,
+                'tagihan' => $request->tagihan,
+                'keterangan' => $request->keterangan
+            ]);
+            return ['status' => 'success', 'pesan' => 'Data berhasil diubah'];
         } else {
-            return response()->json(['pesan' => 'Data gagal di hapus'], 404);
+            return ['status' => 'error', 'pesan' => 'Data tidak ditemukan'];
+        }
+    }
+    private function hapus(Request $request)
+    {
+        $role = Pembayaran::whereId($request->id)->first();
+        if ($role) {
+            $role->delete();
+            return ['status' => 'success', 'pesan' => 'Data berhasil dihapus'];
+        } else {
+            return ['status' => 'error', 'pesan' => 'Data tidak ditemukan'];
         }
     }
 }

@@ -2,97 +2,146 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Santri;
-use DataTables;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use Yajra\DataTables\Facades\DataTables;
+use App\Models\Santri;
+use Illuminate\Support\Facades\File;
 
 class SantriController extends Controller
 {
-    /**
-     * Menampilkan halaman tabel user
-     *
-     * @return \Illuminate\Http\Response
-     */
+    //
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $datas = Santri::all();
-            return DataTables::of($datas)
+            $data = Santri::all();
+            return DataTables::of($data)
                 ->addIndexColumn()
+                ->addColumn('ttl', function ($row) {
+                    return $row->tempat_lahir . ', ' . $row->tanggal_lahir;
+                })
+                ->addColumn('jk', function ($row) {
+                    return $row->jenis_kelamin == 'L' ? 'Laki-laki' : 'Perempuan';
+                })
+                ->addColumn('foto', function ($row) {
+                    $img = "<img src=" . asset('assets/foto') . "/" . $row->foto . " alt='foto' width='100px' >";
+                    return $img;
+                })
                 ->addColumn('action', function ($row) {
-                    $btn = "<button type='button' data-id='$row->id' data-nama='$row->nama' data-jk='$row->jk'  data-alamat='$row->alamat' data-tempat='$row->tempat' data-tgl_lahir='$row->tgl_lahir' class='edit btn btn-sm btn-warning btn-sm' > <i class='fas fa-edit'></i></button>";
-                    $btn .= "<button type='button' data-id='$row->id' class='hapus btn btn-sm btn-danger m-1'> <i class='fas fa-trash'></i></button>";
+                    $role = $this->role();
+                    $btn = '';
+                    if ($role->can_edit && $role->can_delete) {
+                        $btn = "<button data-id='$row->id' class='edit btn btn-warning btn-sm m-1'><i class='fas fa-edit'></i></button>";
+                        $btn .= "<button data-id='$row->id' class='hapus btn btn-danger btn-sm m-1'><i class='fas fa-trash'></i></button>";
+                    } elseif ($role->can_edit) {
+                        $btn = "<button data-id='$row->id' class='edit btn btn-warning btn-sm m-1'><i class='fas fa-edit'></i></button>";
+                    } elseif ($role->can_delete) {
+                        $btn = "<button data-id='$row->id' class='hapus btn btn-danger btn-sm m-1'><i class='fas fa-trash'></i></button>";
+                    }
                     return $btn;
                 })
-                ->rawColumns(['action'])
+                ->rawColumns(['action', 'ttl', 'jk', 'foto'])
                 ->make(true);
         }
-        $data = [
-            'datatable' => route('santri'),
-            'urlTambah' => route('santri.tambah'),
-            'urlEdit' => route('santri.edit'),
-            'urlHapus' => route('santri.hapus'),
-        ];
-        return view('admin.santri', $data);
+        $title = 'Santri';
+        $th = [];
+        $level = $this->role();
+        if ($level->can_edit || $level->can_delete)
+            $th = ['No', 'NIS', 'Nama Santri', 'Alamat', 'TTL', 'Jenis Kelamin', 'Foto', 'Aksi'];
+        else
+            $th = ['No', 'NIS', 'Nama Santri', 'Alamat', 'TTL', 'Jenis Kelamin', 'Foto'];
+        $urlDatatable = route('santri');
+        $aksi = route('santri.aksi');
+        return view('admin.santri.index', compact('title', 'th', 'urlDatatable', 'aksi', 'level'));
     }
-    public function tambah(Request $request)
+    public function aksi(Request $request)
     {
-        $validate = Validator::make($request->all(), [
-            'nama' => 'required',
-            'alamat' => 'required',
-            'jk' => 'required',
-            'tempat' => 'required',
-            'tgl_lahir' => 'required',
-        ]);
-        if ($validate->fails()) {
-            return response()->json(['error' => $validate->errors()], 401);
+        $aksi = $request->aksi;
+        $data = [];
+        switch ($aksi) {
+            case 'tambah':
+                $data = $this->tambah($request);
+                break;
+            case 'edit':
+                $data = $this->edit($request);
+                break;
+            case 'hapus':
+                $data = $this->hapus($request);
+                break;
+            default:
+                $data = ['status' => 'error', 'status' => 'Aksi tidak ditemukan'];
+                break;
         }
+        return response()->json($data);
+    }
+    private function tambah(Request $request)
+    {
         $santri = Santri::create([
+            'nis' => $request->nis,
             'nama' => $request->nama,
-            'jk' => $request->jk,
             'alamat' => $request->alamat,
-            'tempat' => $request->tempat,
-            'tgl_lahir' => $request->tgl_lahir
+            'tempat_lahir' => $request->tempat_lahir,
+            'tanggal_lahir' => $request->tanggal_lahir,
+            'jenis_kelamin' => $request->jk,
+            'foto' => $this->upload($request)
         ]);
         if ($santri) {
-            return response()->json(['pesan' => 'data santri berhasil di tambahkan'], 200);
+            return ['status' => 'success', 'pesan' => 'Data berhasil ditambah'];
         } else {
-            return response()->json(['pesan' => 'data santri gagal di tambahkan'], 500);
+            return ['status' => 'error', 'pesan' => 'Data gagal ditambah'];
         }
     }
-    public function edit(Request $request)
+    private function edit(Request $request)
     {
-        $validate = Validator::make($request->all(), [
-            'nama' => 'required',
-            'alamat' => 'required',
-            'jk' => 'required',
-            'tempat' => 'required',
-            'tgl_lahir' => 'required',
-        ]);
-        if ($validate->fails()) {
-            return response()->json(['error' => $validate->errors()], 401);
-        }
         $santri = Santri::whereId($request->id)->first();
         if ($santri) {
+            $santri->nis = $request->nis;
             $santri->nama = $request->nama;
-            $santri->jk = $request->jk;
             $santri->alamat = $request->alamat;
-            $santri->tempat = $request->tempat;
-            $santri->tgl_lahir = $request->tgl_lahir;
+            $santri->tempat_lahir = $request->tempat_lahir;
+            $santri->tanggal_lahir = $request->tanggal_lahir;
+            $santri->jenis_kelamin = $request->jk;
+            if ($request->hasFile('foto') && $santri->foto != 'default.png') {
+                $path = public_path() . "/assets/foto/" . $santri->foto;
+                File::delete($path);
+                $santri->foto = $this->upload($request);
+            }
             $santri->update();
-            return response()->json(['pesan' => 'data santri berhasil di edit'], 200);
+            return ['status' => 'success', 'pesan' => 'Data berhasil diubah'];
         } else {
-            return response()->json(['pesan' => 'data santri gagal di edit'], 404);
+            return ['status' => 'error', 'pesan' => 'Data tidak ditemukan'];
         }
     }
-    public function delete(Request $request)
+    private function hapus(Request $request)
     {
-        $request = Santri::whereId($request->id)->delete();
-        if ($request) {
-            return response()->json(['pesan' => 'Data berhasil di hapus'], 200);
+        $santri = Santri::whereId($request->id)->first();
+        if ($santri) {
+            if ($santri->foto != 'default.png') {
+                $path = public_path() . "/assets/foto/" . $santri->foto;
+                File::delete($path);
+            }
+            $santri->delete();
+            return ['status' => 'success', 'pesan' => 'Data berhasil dihapus'];
         } else {
-            return response()->json(['pesan' => 'Data gagal di hapus'], 404);
+            return ['status' => 'error', 'pesan' => 'Data tidak ditemukan'];
+        }
+    }
+    private function upload(Request $request)
+    {
+        if ($request->hasfile('foto')) {
+            $filename = round(microtime(true) * 1000) . '-' . str_replace(' ', '-', $request->file('foto')->getClientOriginalName());
+            $request->file('foto')->move(public_path('assets/foto'), $filename);
+            return $filename;
+        } else {
+            return 'default.png';
+        }
+    }
+    public function detail(Request $request, $id)
+    {
+        $data = Santri::whereId($id)->first();
+        if ($data) {
+            return response()->json($data);
+        } else {
+            return response()->json(['status' => 'error', 'pesan' => 'data tidak ditemukan'], 404);
         }
     }
 }

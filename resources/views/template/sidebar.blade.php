@@ -1,9 +1,17 @@
+@php
+    $data = \App\Models\AksesMenu::join('menu as m', 'akses_menu.menu_id', '=', 'm.id')
+            ->where('akses_menu.role_id', Auth::user()->role_id)
+            ->orderBy('m.urutan', 'ASC')
+            ->get();
+    $segment = Request::segment(2) ?? 'admin';
+@endphp
+
 <!-- Main Sidebar Container -->
-<aside class="main-sidebar sidebar-dark-primary elevation-4">
+<aside class="main-sidebar sidebar-dark-primary elevation-4" id="sidebar">
     <!-- Brand Logo -->
-    <a href="index3.html" class="brand-link">
+    <a href="{{ route('dashboard') }}" class="brand-link">
         <img src="{{ asset('assets') }}/dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-        <span class="brand-text font-weight-light">APCS</span>
+        <span class="brand-text font-weight-light">Catering Santri</span>
     </a>
 
     <!-- Sidebar -->
@@ -11,70 +19,63 @@
         <!-- Sidebar user panel (optional) -->
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
             <div class="image">
-                <i class="fa fa-user fa-2x text-light"></i>
+                <i class="fas fa-user fa-2x text-light"></i>
             </div>
             <div class="info">
-                <a href="#" class="d-block">{{ ucfirst(Auth::user()->nama) }}</a>
+                <a href="#" class="d-block">{{ ucfirst(Auth::user()->username) }}</a>
             </div>
         </div>
-
 
         <!-- Sidebar Menu -->
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                 <!-- Add icons to the links using the .nav-icon class
-               with font-awesome or any other icon font library -->
-
+       with font-awesome or any other icon font library -->
                 <li class="nav-item">
-                    <a href="{{ route('dashboard') }}" class="nav-link">
+                    <a href="{{ route('dashboard') }}" class="nav-link @if('admin'==$segment) active @endif ">
                         <i class="nav-icon fas fa-tachometer-alt"></i>
                         <p>
                             Dashboard
                         </p>
                     </a>
                 </li>
-                @if(Auth::user()->level == 'admin')
+                @foreach ($data as $m)
+                @php
+                    $menu = \App\Models\Menu::whereId_parent($m->id)->orderBy('urutan', 'ASC')->get();
+                    $link = join(',',array_column($menu->toArray(), 'link'));
+                @endphp
+                @if(count($menu) > 0)
+                <li class="nav-item @if(preg_match("/$segment/", $link)) menu-open @endif">
+                    <a href="#" class="nav-link @if(preg_match("/$segment/", $link)) active @endif ">
+                      <i class="nav-icon {{ $m->icon }}"></i>
+                      <p>
+                        {{$m->title}}
+                        <i class="right fas fa-angle-left"></i>
+                      </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        @foreach ($menu as $s)
+                        <li class="nav-item">
+                          <a href="{{ route($s->link) }}" class="nav-link @if(preg_match("/$s->link/", $segment)) active @endif">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>{{ $s->title }}</p>
+                          </a>
+                        </li>
+                        @endforeach
+                    </ul>
+                  </li>
+
+                @else
                 <li class="nav-item">
-                    <a href="{{ route('user') }}" class="nav-link">
-                        <i class="nav-icon fas fa-user"></i>
+                    <a href="{{ route($m->link) }}" class="nav-link @if($segment == $m->link) active @endif">
+                        <i class="nav-icon fas {{$m->icon}}"></i>
                         <p>
-                            User
+                            {{$m->title}}
                         </p>
                     </a>
                 </li>
                 @endif
-                <li class="nav-item">
-                    <a href="{{ route('santri') }}" class="nav-link">
-                        <i class="nav-icon fas fa-users"></i>
-                        <p>
-                            Santri
-                        </p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('ruangan') }}" class="nav-link">
-                        <i class="nav-icon fas fa-building"></i>
-                        <p>
-                            Ruangan
-                        </p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('pembayaran') }}" class="nav-link">
-                        <i class="nav-icon fas fa-dollar-sign"></i>
-                        <p>
-                            Pembayaran Catering
-                        </p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('pengeluaranBelanja') }}" class="nav-link">
-                        <i class="nav-icon fas fa-receipt"></i>
-                        <p>
-                            Histori Belanja
-                        </p>
-                    </a>
-                </li>
+                @endforeach
                 <li class="nav-item">
                     <a href="{{ route('logout') }}" class="nav-link">
                         <i class="nav-icon fas fa-sign-out-alt"></i>

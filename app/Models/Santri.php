@@ -10,10 +10,12 @@ class Santri extends Model
     use HasFactory;
     protected $table = 'santri';
     protected $fillable = [
+        'nis',
         'nama',
-        'jk',
         'alamat',
-        'tempat',
-        'tgl_lahir',
+        'tempat_lahir',
+        'tanggal_lahir',
+        'jenis_kelamin',
+        'foto'
     ];
 }

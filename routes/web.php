@@ -1,16 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\LoginController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\PembayaranController;
-use App\Http\Controllers\PembayaranSantriController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\SantriController;
-use App\Http\Controllers\RuanganController;
-use App\Http\Controllers\RuanganSantriController;
-use App\Http\Controllers\PengeluaranBelanjaController;
-use App\Models\PembayaranSantri;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,55 +13,62 @@ use App\Models\PembayaranSantri;
 |
 */
 
-Route::get('/', [LoginController::class, 'index'])->name('login');
-Route::post('/ceklogin', [LoginController::class, 'login']);
-Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
-
-
-//autentikasi login
+Route::get('/', [\App\Http\Controllers\AuthController::class, 'index'])->name('login');
+Route::post('/login', [\App\Http\Controllers\AuthController::class, 'login'])->name('ceklogin');
+Route::get('/logout', [\App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
 Route::middleware(['auth'])->prefix('admin')->group(function () {
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-    //user controller
-    Route::middleware(['akses'])->prefix('user')->group(function () {
-        Route::get('/', [UserController::class, 'index'])->name('user');
-        Route::post('/tambah', [UserController::class, 'tambah'])->name('user.tambah');
-        Route::post('/edit', [UserController::class, 'edit'])->name('user.edit');
-        Route::post('/hapus', [UserController::class, 'delete'])->name('user.hapus');
-    });
+    Route::get('/', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/getMenu', [\App\Http\Controllers\DashboardController::class, 'getMenu'])->name('getmenu');
 
-    Route::prefix('santri')->group(function () {
-        //santri controller
-        Route::get('/', [SantriController::class, 'index'])->name('santri');
-        Route::post('/tambah', [SantriController::class, 'tambah'])->name('santri.tambah');
-        Route::post('/edit', [SantriController::class, 'edit'])->name('santri.edit');
-        Route::post('/hapus', [SantriController::class, 'delete'])->name('santri.hapus');
-    });
-
-    Route::prefix('ruangan')->group(function () {
-        //ruangan controller
-        Route::get('/', [RuanganController::class, 'index'])->name('ruangan');
-        Route::post('/tambah', [RuanganController::class, 'tambah'])->name('ruangan.tambah');
-        Route::post('/edit', [RuanganController::class, 'edit'])->name('ruangan.edit');
-        Route::post('/hapus', [RuanganController::class, 'delete'])->name('ruangan.hapus');
-        Route::get('/santri/{id}', [RuanganSantriController::class, 'index']);
-        Route::get('/santri/{id}/getSantri', [RuanganSantriController::class, 'getSantri']);
-        Route::post('/santri/{id}/baru', [RuanganSantriController::class, 'baru']);
-        Route::post('/santri/{id}/tambah', [RuanganSantriController::class, 'store']);
-        Route::post('/santri/{id}/edit', [RuanganSantriController::class, 'edit']);
-        Route::post('/santri/{id}/hapus', [RuanganSantriController::class, 'delete']);
-    });
-    Route::prefix(('pembayaran'))->group(function () {
-        Route::get('/', [PembayaranController::class, 'index'])->name('pembayaran');
-        Route::post('/tambah', [PembayaranController::class, 'tambah'])->name('pembayaran.tambah');
-        Route::post('/edit', [PembayaranController::class, 'edit'])->name('pembayaran.edit');
-        Route::post('/hapus', [PembayaranController::class, 'hapus'])->name('pembayaran.hapus');
-    });
-
-    Route::prefix('pengeluaranBelanja')->group(function () {
-        //pengeluaran belanja controller
-        Route::get('/', [PengeluaranBelanjaController::class, 'index'])->name('pengeluaranBelanja');
-        Route::post('/tambah', [PengeluaranBelanjaController::class, 'tambah'])->name('pengeluaranBelanja.tambah');
-        Route::post('/edit', [PengeluaranBelanjaController::class, 'edit'])->name('pengeluaranBelanja.edit');
-        Route::post('/hapus', [PengeluaranBelanjaController::class, 'hapus'])->name('pengeluaranBelanja.hapus');
+    Route::middleware(['roleAkses'])->group(function () {
+        Route::prefix('role')->group(function () {
+            Route::get('/', [\App\Http\Controllers\RoleController::class, 'index'])->name('role');
+            Route::post('/aksi', [\App\Http\Controllers\RoleController::class, 'aksi'])->name('role.aksi');
+        });
+        Route::prefix('user')->group(function () {
+            Route::get('/', [\App\Http\Controllers\UserController::class, 'index'])->name('user');
+            Route::post('/aksi', [\App\Http\Controllers\UserController::class, 'aksi'])->name('user.aksi');
+        });
+        Route::prefix('menu')->group(function () {
+            Route::get('/', [\App\Http\Controllers\MenuController::class, 'index'])->name('menu');
+            Route::get('/submenu/{id}', [\App\Http\Controllers\SubmenuController::class, 'index'])->name('submenu');
+            Route::post('/aksi', [\App\Http\Controllers\MenuController::class, 'aksi'])->name('menu.aksi');
+            Route::post('/submenu/{id}/aksi', [\App\Http\Controllers\SubmenuController::class, 'aksi'])->name('submenu.aksi');
+        });
+        Route::prefix('akses')->group(function () {
+            Route::get('/', [\App\Http\Controllers\AksesController::class, 'index'])->name('akses');
+            Route::get('/edit/{id}', [\App\Http\Controllers\AksesController::class, 'edit'])->name('akses.edit');
+            Route::post('/check/{id}', [\App\Http\Controllers\AksesController::class, 'check'])->name('akses.check');
+        });
+        Route::prefix('santri')->group(function () {
+            Route::get('/', [\App\Http\Controllers\SantriController::class, 'index'])->name('santri');
+            Route::post('/aksi', [\App\Http\Controllers\SantriController::class, 'aksi'])->name('santri.aksi');
+            Route::get('/detail/{id}', [\App\Http\Controllers\SantriController::class, 'detail'])->name('santri.detail');
+        });
+        Route::prefix('ruangan')->group(function () {
+            Route::get('/', [\App\Http\Controllers\RuanganController::class, 'index'])->name('ruangan');
+            Route::post('/aksi', [\App\Http\Controllers\RuanganController::class, 'aksi'])->name('ruangan.aksi');
+            Route::get('/detail/{id}', [\App\Http\Controllers\RuanganController::class, 'detail'])->name('ruangan.detail');
+            Route::get('/{id}/santri', [\App\Http\Controllers\RuanganSantriController::class, 'index'])->name('ruangan.santri');
+            Route::post('/{id}/santri/aksi', [\App\Http\Controllers\RuanganSantriController::class, 'aksi'])->name('ruangan.santri.aksi');
+            Route::get('/{id}/getSantri', [\App\Http\Controllers\RuanganSantriController::class, 'getSantri'])->name('ruangan.santri.getSantri');
+            Route::get('/{id}/getRuangan', [\App\Http\Controllers\RuanganSantriController::class, 'getRuangan'])->name('ruangan.santri.getRuangan');
+        });
+        Route::prefix('tagihan')->group(function () {
+            Route::get('/', [\App\Http\Controllers\TagihanController::class, 'index'])->name('tagihan');
+            Route::post('/aksi', [\App\Http\Controllers\TagihanController::class, 'aksi'])->name('tagihan.aksi');
+        });
+        Route::prefix('pembayaran')->group(function () {
+            Route::get('/', [\App\Http\Controllers\PembayaranController::class, 'index'])->name('pembayaran');
+            Route::post('/aksi', [\App\Http\Controllers\PembayaranController::class, 'aksi'])->name('pembayaran.aksi');
+        });
+        Route::prefix('pengeluaran')->group(function () {
+            Route::get('/', [\App\Http\Controllers\PengeluaranController::class, 'index'])->name('pengeluaran');
+            Route::post('/aksi', [\App\Http\Controllers\PengeluaranController::class, 'aksi'])->name('pengeluaran.aksi');
+        });
+        Route::prefix('setting')->group(function () {
+            Route::get('/', [\App\Http\Controllers\SettingController::class, 'index'])->name('setting');
+            Route::post('/aksi', [\App\Http\Controllers\SettingController::class, 'aksi'])->name('setting.aksi');
+        });
     });
 });

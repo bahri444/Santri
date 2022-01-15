@@ -1,58 +1,80 @@
 @extends('template.template')
+@section('font')
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed&display=swap" rel="stylesheet">
+@endsection
 @section('body')
+<style>
+    * {
+        font-family: 'Roboto Condensed', sans-serif;
+    }
+</style>
 
-<body class="hold-transition login-page">
-    <div class="login-box">
-        <!-- /.login-logo -->
-        <div class="card">
-            <div class="card-body login-card-body">
-                <p class="login-box-msg">aplikasi pembayaran catering santri</p>
-
-                <form action="{{url('/ceklogin')}}" method="post">
-                    @csrf
-                    <div class="input-group mb-3">
-                        <input type="text" name="username" class="form-control @error('username') is-invalid @enderror" placeholder="Username" value="{{old('username')}}">
-                        <div class="input-group-append">
-                            <div class="input-group-text">
-                                <span class="fas fa-user"></span>
-                            </div>
-                        </div>
-                        @error('username')
-                        <div class="invalid-feedback">
-                            {{$message}}
-                        </div>
-                        @enderror
-                    </div>
-                    <div class="input-group mb-3">
-                        <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" placeholder="Password">
-                        <div class="input-group-append">
-                            <div class="input-group-text">
-                                <span class="fas fa-lock"></span>
-                            </div>
-                        </div>
-                        @error('password')
-                        <div class="invalid-feedback">
-                            {{$message}}
-                        </div>
-                        @enderror
-                    </div>
-                    <div class="row">
-                        <!-- /.col -->
-                        <div class="col-4">
-                            <button type="submit" class="btn btn-primary btn-block">Login</button>
-                        </div>
-                        <!-- /.col -->
-                    </div>
-                    @if(Session::has('message'))
-                    <small class="text-danger">
-                        {{Session()->get('message')}}
-                    </small>
-                    @endif
-
-                </form>
-                <!-- /.social-auth-links -->
+<body>
+    <div class="container-fluid m-0">
+        <div class="row bg-light d-flex justify-content-center align-items-center" style="height: 100vh">
+            <div class="d-none d-md-block d-lg-block col-md-6 col-lg-4 p-3">
+                <img src="{{ asset('assets/login_logo.svg') }}" alt="login" class="w-100">
             </div>
-            <!-- /.login-card-body -->
+            <div class="col-sm-12 col-md-6 col-lg-8 h-100" style="background-color: #757de8">
+                <div class="row d-flex justify-content-center align-items-center h-100 w-100">
+                    <div class="col-sm-12 col-md-6 col-lg-6">
+                        <div class="card shadows">
+                            <div class="card-body">
+                                <h3>Aplikasi Pembayaran Catering Santri</h3>
+                                <small>Silahkan login untuk menggunakan aplikasi</small>
+                                <hr>
+                                <form action="{{ route('ceklogin') }}" method="post">
+                                    @csrf
+                                    <div class="mb-3">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text" id="basic-addon1"><i class="fas fa-user"></i></span>
+                                            </div>
+                                            <input type="text" class='form-control @error("username") is-invalid @enderror ' name="username" id="username" placeholder="Masukkan Username" value="{{old('username')}}" />
+                                        </div>
+                                        @error('username')
+                                        <small class="text-danger">{{ $message }}</small>
+                                        @enderror
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text" id="basic-addon1"><i class="fas fa-lock"></i></span>
+                                            </div>
+                                            <input type="password" class="form-control @error('password') is-invalid @enderror" name="password" id="password" value="{{old('password')}}" placeholder="Masukkan Password" />
+                                        </div>
+                                        @error('password')
+                                        <small class="text-danger">{{ $message }}</small>
+                                        @enderror
+                                    </div>
+                                    <div class="form-group p-1">
+                                        <input type="checkbox" id="show">&nbsp;
+                                        <small>
+                                            <label for="show">Lihat Password</label>
+                                        </small>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <button type="submit" class="btn btn-success">Login</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </div>
+    @endsection
+
+    @section('script')
+    <script>
+        $(document).ready(function() {
+            $('#show').change(function() {
+                $('#password').attr('type', `${$(this).prop('checked') ? 'text' : 'password'}`)
+            })
+        })
+    </script>
     @endsection

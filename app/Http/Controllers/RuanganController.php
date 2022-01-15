@@ -3,85 +3,109 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use DataTables;
 use App\Models\Ruangan;
-use Illuminate\Support\Facades\Validator;
+use Yajra\DataTables\Facades\DataTables;
 
 class RuanganController extends Controller
 {
-    /**
-     * Menampilkan halaman tabel user
-     *
-     * @return \Illuminate\Http\Response
-     */
+    //
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $datas = Ruangan::all();
-            return DataTables::of($datas)
+            $data = Ruangan::all();
+            return DataTables::of($data)
                 ->addIndexColumn()
-                ->addColumn('btn', function ($row) {
-                    $btn = "<a href='" . url("admin/ruangan/santri/$row->id") . "' class='btn btn-info btn-sm' >Tambah Santri</a>";
-                    return $btn;
+                ->addColumn('santri', function ($row) {
+                    return "<a href='" . route('ruangan.santri', $row->id) . "' class='btn btn-info'>Data Santri</a>";
                 })
                 ->addColumn('action', function ($row) {
-                    $btn = "<button type='button' data-id='$row->id' data-ruangan='$row->ruangan' class='edit btn btn-sm btn-warning m-1'><i class='fas fa-edit'></i></button>";
-                    $btn .= "<button type='button' data-id='$row->id' class='hapus btn btn-sm btn-danger m-1'> <i class='fas fa-trash'></i></button>";
-
+                    $role = $this->role();
+                    $btn = '';
+                    if ($role->can_edit && $role->can_delete) {
+                        $btn = "<button data-id='$row->id' class='edit btn btn-warning btn-sm m-1'><i class='fas fa-edit'></i></button>";
+                        $btn .= "<button data-id='$row->id' class='hapus btn btn-danger btn-sm m-1'><i class='fas fa-trash'></i></button>";
+                    } elseif ($role->can_edit) {
+                        $btn = "<button data-id='$row->id' class='edit btn btn-warning btn-sm m-1'><i class='fas fa-edit'></i></button>";
+                    } elseif ($role->can_delete) {
+                        $btn = "<button data-id='$row->id' class='hapus btn btn-danger btn-sm m-1'><i class='fas fa-trash'></i></button>";
+                    }
                     return $btn;
                 })
-                ->rawColumns(['action', 'btn'])
+                ->rawColumns(['action', 'santri'])
                 ->make(true);
         }
-        $data = [
-            'datatable' => route('ruangan'),
-            'urlTambah' => route('ruangan.tambah'),
-            'urlEdit' => route('ruangan.edit'),
-            'urlHapus' => route('ruangan.hapus'),
-        ];
-        return view('admin.ruangan', $data);
+        $title = 'ruangan';
+        $th = [];
+        $level = $this->role();
+        if ($level->can_edit || $level->can_delete)
+            $th = ['No', 'Kode Ruangan', 'Nama Ruangan', 'Data Santri', 'Aksi'];
+        else
+            $th = ['No', 'Kode Ruangan', 'Nama Ruangan', 'Data Santri'];
+        $urlDatatable = route('ruangan');
+        $aksi = route('ruangan.aksi');
+        return view('admin.ruangan.index', compact('title', 'th', 'urlDatatable', 'aksi', 'level'));
     }
-    public function tambah(Request $request)
+    public function aksi(Request $request)
     {
-        $validate = Validator::make($request->all(), [
-            'ruangan' => 'required',
-        ]);
-        if ($validate->fails()) {
-            return response()->json(['error' => $validate->errors()], 401);
+        $aksi = $request->aksi;
+        $data = [];
+        switch ($aksi) {
+            case 'tambah':
+                $data = $this->tambah($request);
+                break;
+            case 'edit':
+                $data = $this->edit($request);
+                break;
+            case 'hapus':
+                $data = $this->hapus($request);
+                break;
+            default:
+                $data = ['status' => 'error', 'status' => 'Aksi tidak ditemukan'];
+                break;
         }
-        $ruangan = Ruangan::create([
-            'ruangan' => $request->ruangan,
+        return response()->json($data);
+    }
+    private function tambah(Request $request)
+    {
+        $santri = Ruangan::create([
+            'kode_ruangan' => $request->kode_ruangan,
+            'nama_ruangan' => $request->nama_ruangan,
         ]);
-        if ($ruangan) {
-            return response()->json(['pesan' => 'data ruangan berhasil di tambahkan'], 200);
+        if ($santri) {
+            return ['status' => 'success', 'pesan' => 'Data berhasil ditambah'];
         } else {
-            return response()->json(['pesan' => 'data ruangan gagal di tambahkan'], 500);
+            return ['status' => 'error', 'pesan' => 'Data gagal ditambah'];
         }
     }
-    public function edit(Request $request)
+    private function edit(Request $request)
     {
-        $validate = Validator::make($request->all(), [
-            'ruangan' => 'required',
-        ]);
-        if ($validate->fails()) {
-            return response()->json(['error' => $validate->errors()], 401);
-        }
-        $ruangan = Ruangan::whereId($request->id)->first();
-        if ($ruangan) {
-            $ruangan->ruangan = $request->ruangan;
-            $ruangan->update();
-            return response()->json(['pesan' => 'data ruangan berhasil di edit'], 200);
+        $santri = Ruangan::whereId($request->id)->first();
+        if ($santri) {
+            $santri->kode_ruangan = $request->kode_ruangan;
+            $santri->nama_ruangan = $request->nama_ruangan;
+            $santri->update();
+            return ['status' => 'success', 'pesan' => 'Data berhasil diubah'];
         } else {
-            return response()->json(['pesan' => 'data ruangan gagal di edit'], 404);
+            return ['status' => 'error', 'pesan' => 'Data tidak ditemukan'];
         }
     }
-    public function delete(Request $request)
+    private function hapus(Request $request)
     {
-        $request = Ruangan::whereId($request->id)->delete();
-        if ($request) {
-            return response()->json(['pesan' => 'Data berhasil dihapus.'], 200);
+        $santri = Ruangan::whereId($request->id)->first();
+        if ($santri) {
+            $santri->delete();
+            return ['status' => 'success', 'pesan' => 'Data berhasil dihapus'];
         } else {
-            return response()->json(['pesan' => 'data gagal di hapus.'], 404);
+            return ['status' => 'error', 'pesan' => 'Data tidak ditemukan'];
+        }
+    }
+    public function detail(Request $request, $id)
+    {
+        $data = Ruangan::whereId($id)->first();
+        if ($data) {
+            return response()->json($data);
+        } else {
+            return response()->json(['status' => 'error', 'pesan' => 'data tidak ditemukan'], 404);
         }
     }
 }
