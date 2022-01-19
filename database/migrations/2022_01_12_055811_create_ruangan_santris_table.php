@@ -17,6 +17,7 @@ class CreateRuanganSantrisTable extends Migration
             $table->id();
             $table->foreignId('santri_id')->constrained('santri')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('ruangan_id')->constrained('ruangan')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->string('pembina_ruangan');
             $table->timestamps();
         });
     }

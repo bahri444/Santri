@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\AksesMenu;
 use App\Models\Menu;
-use App\Models\Role;
+use App\Models\Pembayaran;
+use App\Models\Ruangan;
+use App\Models\Santri;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
 
 class DashboardController extends Controller
 {
@@ -16,8 +17,10 @@ class DashboardController extends Controller
     {
         $data = [
             'title' => 'dashboard',
-            'user' => User::all()->count(),
-            'role' => Role::all()->count(),
+            'santri' => Santri::all()->count(),
+            'ruangan' => Ruangan::all()->count(),
+            'minggu' => Pembayaran::whereRaw('YEARWEEK(created_at) = YEARWEEK(NOW())')->get()->count(),
+            'bulan' => Pembayaran::whereRaw('YEAR(created_at) = YEAR(NOW())')->whereRaw('MONTH(created_at) = MONTH(NOW())')->get()->count(),
         ];
         return view('admin.dashboard', $data);
     }

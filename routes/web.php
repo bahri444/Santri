@@ -62,6 +62,11 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
             Route::get('/', [\App\Http\Controllers\PembayaranController::class, 'index'])->name('pembayaran');
             Route::post('/aksi', [\App\Http\Controllers\PembayaranController::class, 'aksi'])->name('pembayaran.aksi');
         });
+        Route::prefix('laporan')->group(function () {
+            Route::get('/', [\App\Http\Controllers\LaporanController::class, 'index'])->name('laporan');
+            Route::post('/datatable', [\App\Http\Controllers\LaporanController::class, 'datatable'])->name('laporan.datatable');
+            Route::post('/aksi', [\App\Http\Controllers\LaporanController::class, 'aksi'])->name('laporan.aksi');
+        });
         Route::prefix('pengeluaran')->group(function () {
             Route::get('/', [\App\Http\Controllers\PengeluaranController::class, 'index'])->name('pengeluaran');
             Route::post('/aksi', [\App\Http\Controllers\PengeluaranController::class, 'aksi'])->name('pengeluaran.aksi');

@@ -72,6 +72,10 @@
                     <label for="nama_ruangan">Nama Ruangan</label>
                     <input type="text" class="form-control" name="nama_ruangan" id="nama_ruangan" placeholder="Masukkan Nama Ruangan">
                 </div>
+                <div class="form-group">
+                    <label for="pembina_ruangan">Pembina Ruangan</label>
+                    <input type="text" class="form-control" name="pembina_ruangan" id="pembina_ruangan" placeholder="Masukkan Pembina Ruangan">
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
@@ -100,6 +104,7 @@ $(document).ready(function(){
               {data: 'DT_RowIndex', name: 'DT_RowIndex'},
               {data: 'kode_ruangan', name: 'kode_ruangan'},
               {data: 'nama_ruangan', name: 'nama_ruangan'},
+              {data: 'pembina_ruangan', name: 'pembina_ruangan'},
               {data: 'santri', name: 'santri'},
               @if ($level->can_edit || $level->can_delete)
               {
@@ -130,6 +135,7 @@ $(document).ready(function(){
         $('#modal').find('#id').val(data.id);
         $('#modal').find('#kode_ruangan').val(data.kode_ruangan);
         $('#modal').find('#nama_ruangan').val(data.nama_ruangan);
+        $('#modal').find('#pembina_ruangan').val(data.pembina_ruangan);
         $('#modal').find('.modal-title').html('Edit Data');
         $('#modal').find('#aksi').val('edit');
         $('#modal').find('#btn').html('Simpan');

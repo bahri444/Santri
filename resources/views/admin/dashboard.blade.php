@@ -25,7 +25,7 @@
 
                     <div class="info-box-content">
                         <span class="info-box-text">Santri</span>
-                        <span class="info-box-number">0</span>
+                        <span class="info-box-number">{{ $santri }}</span>
                     </div>
                 </div>
             </div>
@@ -35,7 +35,7 @@
 
                     <div class="info-box-content">
                         <span class="info-box-text">Ruangan</span>
-                        <span class="info-box-number">0</span>
+                        <span class="info-box-number">{{ $ruangan }}</span>
                     </div>
                 </div>
             </div>
@@ -47,7 +47,7 @@
 
                     <div class="info-box-content">
                         <span class="info-box-text">Pembayaran Minggu ini</span>
-                        <span class="info-box-number">0</span>
+                        <span class="info-box-number">{{ $minggu }}</span>
                     </div>
                 </div>
             </div>
@@ -57,7 +57,7 @@
 
                     <div class="info-box-content">
                         <span class="info-box-text">Pembayaran Bulan ini</span>
-                        <span class="info-box-number">0</span>
+                        <span class="info-box-number">{{ $bulan }}</span>
                     </div>
                 </div>
             </div>

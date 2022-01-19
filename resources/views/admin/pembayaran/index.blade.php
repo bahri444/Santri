@@ -75,7 +75,7 @@
                 </div>
                 <div class="form-group">
                     <label for="tagihan_id">Tagihan</label>
-                    <select name="tagihan_id" id="Tagihan" class="select2 form-control" required>
+                    <select name="tagihan_id" id="tagihan_id" class="select2 form-control" required>
                         <option value="">Pilih Tagihan</option>
                         @foreach ($tagihan as $s)
                             <option value="{{ $s->id }}">{{$s->nama_tagihan}} {{ $s->tagihan }}</option>
@@ -83,9 +83,8 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="rupiah">Pembayaran</label>
-                    <input type="text" name="rupiah" id="rupiah" class="form-control">
-                    <input type="hidden" id="pembayaran" name="pembayaran">
+                    <label for="tanggal_bayar">Tanggal Bayar</label>
+                    <input type="date" name="tanggal_bayar" id="tanggal_bayar" class="form-control">
                 </div>
 
             </div>
@@ -110,12 +109,6 @@ $(document).ready(function(){
         theme: 'bootstrap4'
         })
     }
-    function rupiah(){
-        let rp = new AutoNumeric('#rupiah', { currencySymbol : 'Rp. ',decimalCharacter:',',decimalPlaces:'2',digitGroupSeparator: '.' });
-		$('#rupiah').keyup(function() {
-			$('#tagihan').val(rp.get())
-		});
-    }
     let table;
     const form=$('#modal').find('.modal-body').html();
     $(function () {
@@ -132,9 +125,8 @@ $(document).ready(function(){
               {data: 'nis', name: 'nis'},
               {data: 'nama', name: 'nama'},
               {data: 'rupiah', name: 'rupiah'},
-              {data: 'pembayaran', name: 'pembayaran'},
-              {data: 'sisa', name: 'sisa'},
-              {data: 'status', name: 'status'},
+              {data: 'tanggal_bayar', name: 'tanggal_bayar'},
+              {data: 'nama_ruangan', name: 'nama_ruangan'},
               @if ($level->can_edit || $level->can_delete)
               {
                   data: 'action',
@@ -150,7 +142,6 @@ $(document).ready(function(){
     $('#tambah').click(()=>{
         $('#modal').find('.modal-title').html('Tambah Data');
         $('#modal').find('.modal-body').html(form);
-        rupiah()
         select2()
         $('#modal').find('#aksi').val('tambah');
         $('#modal').find('#btn').html('Tambah');
@@ -163,11 +154,9 @@ $(document).ready(function(){
         $('#modal').find('.modal-body').html(form);
         $('#modal').find('#aksi').val('edit');
         $('#modal').find('#id').val($(this).data('id'));
-        $('#modal').find('#nama_tagihan').val($(this).data('nama_tagihan'));
-        $('#modal').find('#rupiah').val($(this).data('tagihan'));
-        $('#modal').find('#tagihan').val($(this).data('tagihan'));
-        $('#modal').find('#keterangan').val($(this).data('keterangan'));
-        rupiah()
+        $('#modal').find('#santri_id').val($(this).data('santri_id'));
+        $('#modal').find('#tagihan_id').val($(this).data('tagihan_id'));
+        $('#modal').find('#tanggal_bayar').val($(this).data('tanggal_bayar'));
         $('#modal').find('#btn').html('Simpan');
         $('#modal').modal('show')
     })
@@ -191,8 +180,8 @@ $(document).ready(function(){
         axios.post(`{{ $aksi }}`,data)
         .then(res=>{
             toastr[res.data.status](res.data.pesan)
-            $('#modal').modal('hide')
             table.ajax.reload()
+            $('#modal').modal('hide')
         })
     })
     @endif

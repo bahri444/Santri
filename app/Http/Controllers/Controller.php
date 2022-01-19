@@ -21,4 +21,37 @@ class Controller extends BaseController
         $hasil_rupiah = "Rp. " . number_format($angka, 2, ',', '.');
         return $hasil_rupiah;
     }
+    public function minggu()
+    {
+        $date1 = "20-02-2010";
+        $date2 = "20-04-2010";
+
+        // memecah bagian-bagian dari tanggal $date1
+        $pecahTgl1 = explode("-", $date1);
+
+        // membaca bagian-bagian dari $date1
+        $tgl1 = $pecahTgl1[0];
+        $bln1 = $pecahTgl1[1];
+        $thn1 = $pecahTgl1[2];
+
+        echo "<p>Tanggal yang merupakan hari minggu adalah:</p>";
+
+        // counter looping
+        $i = 0;
+
+        // counter untuk jumlah hari minggu
+        $sum = 0;
+
+        do {
+            $tanggal = date("d-m-Y", mktime(0, 0, 0, $bln1, $tgl1 + $i, $thn1));
+
+            if (date("w", mktime(0, 0, 0, $bln1, $tgl1 + $i, $thn1)) == 0) {
+                $sum++;
+                echo $tanggal . "<br>";
+            }
+
+            $i++;
+        } while ($tanggal != $date2);
+        echo "<p>Jumlah hari minggu antara " . $date1 . " s/d " . $date2 . " adalah: " . $sum . "</p>";
+    }
 }
