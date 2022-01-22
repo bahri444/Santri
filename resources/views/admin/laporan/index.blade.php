@@ -35,6 +35,7 @@
               </div>
               <!-- /.card-header -->
               <form id="filter">
+                  @csrf
               <div class="card-body p-2">
                     <div class="row">
                         <div class="col-sm-12 col-md-4 col-md-4">
@@ -54,8 +55,8 @@
                         </div>
                         <div class="col-sm-12 col-md-4 col-md-4">
                             <div class="form-group">
-                                <label for="tahun" >Bulan</label>
-                                <select name="tahun" id="tahun" class="form-control">
+                                <label for="bulan" >Bulan</label>
+                                <select name="bulan" id="bulan" class="form-control">
                                     <option value="">Pilih Bulan</option>
                                     @foreach ($bulan as $key => $value)
                                     @if (date('m')==$key)
@@ -88,29 +89,22 @@
             <div class="card-body">
                 <h3>Laporan Bulanan</h3>
                 <hr>
-                <table class="table table-bordered">
+                <table class="table table-bordered w-100">
                     <thead>
                         <tr>
-                            <th rowspan="2" class="text-center">No</th>
-                            <th rowspan="2" class="text-center">NIS</th>
-                            <th rowspan="2" class="text-center">Nama</th>
-                            <th rowspan="2" class="text-center">Ruangan</th>
-                            <th colspan="4" class="text-center">Bulan</th>
-                            <th rowspan="2" class="text-center">Detail</th>
-                        </tr>
-                        <tr>
-                            <th class="text-center">Minggu 1</th>
-                            <th class="text-center">Minggu 2</th>
-                            <th class="text-center">Minggu 3</th>
-                            <th class="text-center">Minggu 4</th>
+                            <th class="text-center">No</th>
+                            <th class="text-center">NIS</th>
+                            <th class="text-center">Nama</th>
+                            <th class="text-center">Ruangan</th>
+                            <th  class="text-center">Minggu ini</th>
+                            <th  class="text-center">Bulan ini</th>
+                            <th  class="text-center">Belum terbayar</th>
                         </tr>
                     </thead>
                     <tbody>
 
                     </tbody>
                 </table>
-                {{$tgl_terakhir = date('t', strtotime(now()))}}
-                {{round($tgl_terakhir/7)}}
             </div>
         </div>
     <!--/. container-fluid -->
@@ -122,23 +116,31 @@
 @section('script')
 <script>
     $(document).ready(function(){
-    //     table = $('.table').DataTable({
-    //       processing: true,
-    //       serverSide: true,
-    //       ajax: {
-    //         url:`{{ $urlDatatable }}`,
-    //         type:'post',
-
-    //           },
-    //       columns: [
-    //           {data: 'DT_RowIndex', name: 'DT_RowIndex'},
-    //           {data: 'nis', name: 'nis'},
-    //           {data: 'nama', name: 'nama'},
-    //           {data: 'rupiah', name: 'rupiah'},
-    //           {data: 'tanggal_bayar', name: 'tanggal_bayar'},
-    //           {data: 'nama_ruangan', name: 'nama_ruangan'},
-    //       ]
-    //   });
+        table = $('.table').DataTable({
+          processing: true,
+          serverSide: true,
+          ajax: {
+            url:`{{ $urlDatatable }}`,
+            type:'post',
+            data:function(d){
+                d._token= "{{ csrf_token() }}",
+                d.tahun=$('#tahun').val(),
+                d.bulan=$('#bulan').val(),
+                d.ruangan_id=$('#ruangan_id').val()
+                }},
+          columns: [
+              {data: 'DT_RowIndex', name: 'DT_RowIndex'},
+              {data: 'nis', name: 'nis'},
+              {data: 'nama', name: 'nama'},
+              {data: 'nama_ruangan', name: 'nama_ruangan'},
+              {data: 'minggu', name: 'minggu'},
+              {data: 'bulan', name: 'bulan'},
+              {data: 'belum', name: 'belum'},
+          ]
+      });
+      $('#filter').change(function(){
+          table.ajax.reload();
+      })
     });
 </script>
 @endsection

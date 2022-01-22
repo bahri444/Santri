@@ -101,7 +101,7 @@ class SantriController extends Controller
             $santri->tanggal_lahir = $request->tanggal_lahir;
             $santri->jenis_kelamin = $request->jk;
             if ($request->hasFile('foto') && $santri->foto != 'default.png') {
-                $path = public_path() . "/assets/foto/" . $santri->foto;
+                $path = "assets/foto/" . $santri->foto;
                 File::delete($path);
                 $santri->foto = $this->upload($request);
             }
@@ -116,7 +116,7 @@ class SantriController extends Controller
         $santri = Santri::whereId($request->id)->first();
         if ($santri) {
             if ($santri->foto != 'default.png') {
-                $path = public_path() . "/assets/foto/" . $santri->foto;
+                $path = "assets/foto/" . $santri->foto;
                 File::delete($path);
             }
             $santri->delete();
@@ -129,7 +129,7 @@ class SantriController extends Controller
     {
         if ($request->hasfile('foto')) {
             $filename = round(microtime(true) * 1000) . '-' . str_replace(' ', '-', $request->file('foto')->getClientOriginalName());
-            $request->file('foto')->move(public_path('assets/foto'), $filename);
+            $request->file('foto')->move('assets/foto/', $filename);
             return $filename;
         } else {
             return 'default.png';

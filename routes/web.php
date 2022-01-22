@@ -73,7 +73,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         });
         Route::prefix('setting')->group(function () {
             Route::get('/', [\App\Http\Controllers\SettingController::class, 'index'])->name('setting');
-            Route::post('/aksi', [\App\Http\Controllers\SettingController::class, 'aksi'])->name('setting.aksi');
+            Route::post('/simpan', [\App\Http\Controllers\SettingController::class, 'simpan'])->name('setting.simpan');
         });
     });
 });

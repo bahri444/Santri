@@ -6,8 +6,6 @@ use Illuminate\Http\Request;
 use App\Models\Tagihan;
 use App\Models\Santri;
 use App\Models\Pembayaran;
-use App\Models\Ruangan;
-use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 
 class PembayaranController extends Controller
@@ -21,7 +19,7 @@ class PembayaranController extends Controller
                 ->join('santri', 'pembayaran.santri_id', '=', 'santri.id')
                 ->join('ruangan_santri', 'santri.id', '=', 'ruangan_santri.santri_id')
                 ->join('ruangan', 'ruangan_santri.ruangan_id', '=', 'ruangan.id')
-                ->orderBy('created_at', 'ASC')
+                ->orderBy('created_at', 'DESC')
                 ->get();
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -82,7 +80,7 @@ class PembayaranController extends Controller
     }
     private function tambah(Request $request)
     {
-        $cek = Pembayaran::whereRaw("YEARWEEK(tanggal_bayar) = YEARWEEK('$request->tanggal_bayar')")->first();
+        $cek = Pembayaran::whereRaw("YEARWEEK(tanggal_bayar) = YEARWEEK('$request->tanggal_bayar')")->whereSantri_id($request->santri_id)->first();
         if ($cek) {
             return ['status' => 'error', 'pesan' => 'Santri sudah membayar uang catering pada Minggu tersebut'];
         } else {

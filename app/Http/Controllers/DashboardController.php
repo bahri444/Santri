@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\AksesMenu;
 use App\Models\Menu;
 use App\Models\Pembayaran;
+use App\Models\Pengeluaran;
 use App\Models\Ruangan;
 use App\Models\Santri;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -21,6 +23,10 @@ class DashboardController extends Controller
             'ruangan' => Ruangan::all()->count(),
             'minggu' => Pembayaran::whereRaw('YEARWEEK(created_at) = YEARWEEK(NOW())')->get()->count(),
             'bulan' => Pembayaran::whereRaw('YEAR(created_at) = YEAR(NOW())')->whereRaw('MONTH(created_at) = MONTH(NOW())')->get()->count(),
+            'totalPengeluaran' => $this->rupiah(Pengeluaran::selectRaw("(SUM(harga) * SUM(jumlah)) as total ")->groupBy(DB::raw('YEARWEEK(tanggal_pembelian)'))->first()->total),
+            'totalpengBulan' => $this->rupiah(Pengeluaran::selectRaw("(SUM(harga) * SUM(jumlah)) as total ")->whereMonth('tanggal_pembelian', now())->whereYear('tanggal_pembelian', now())->first()->total),
+            'totalPemasukan' => $this->rupiah(Pembayaran::selectRaw("SUM(tagihan.tagihan) as total")->join('tagihan', 'pembayaran.tagihan_id', '=', 'tagihan.id')->groupBy(DB::raw('YEARWEEK(pembayaran.tanggal_bayar)'))->first()->total),
+            'totalPemasukanBulan' => $this->rupiah(Pembayaran::selectRaw("SUM(tagihan.tagihan) as total")->join('tagihan', 'pembayaran.tagihan_id', '=', 'tagihan.id')->whereMonth('tanggal_bayar', DB::raw('MONTH(now())'))->whereYear('tanggal_bayar', DB::raw('YEAR(now())'))->first()->total),
         ];
         return view('admin.dashboard', $data);
     }
