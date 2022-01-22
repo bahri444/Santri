@@ -45,7 +45,7 @@
                                     <option value="">Pilih Tahun</option>
                                     @foreach ($tahun as $key => $value)
                                     @if (date('Y') == $value->tahun)
-                                    <option value="{{$value->tahun}}" selected>{{$value->tahun}}</option>
+                                    <option value="{{$value->tahun}}">{{$value->tahun}}</option>
                                     @else
                                     <option value="{{$value->tahun}}">{{$value->tahun}}</option>
                                     @endif
@@ -60,7 +60,7 @@
                                     <option value="">Pilih Bulan</option>
                                     @foreach ($bulan as $key => $value)
                                     @if (date('m')==$key)
-                                    <option value="{{ $key }}" selected>{{ $value }}</option>
+                                    <option value="{{ $key }}">{{ $value }}</option>
                                     @else
                                     <option value="{{ $key }}">{{$value}}</option>
                                     @endif

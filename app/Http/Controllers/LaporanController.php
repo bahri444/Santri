@@ -43,14 +43,16 @@ class LaporanController extends Controller
         return  DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('minggu', function ($row) {
-                return Pembayaran::whereSantri_id($row->id)->whereRaw('YEARWEEK(tanggal_bayar) = YEARWEEK(NOW())')->get()->count();
+                $data = Pembayaran::whereSantri_id($row->id)->whereRaw('YEARWEEK(tanggal_bayar) = YEARWEEK(NOW())')->get()->count();
+                return $data ?? 0;
             })
             ->addColumn('bulan', function ($row) {
-                return Pembayaran::whereSantri_id($row->id)->whereRaw('MONTH(tanggal_bayar) = MONTH(NOW())')->whereRaw('YEAR(tanggal_bayar) = YEAR(NOW())')->get()->count();
+                $data = Pembayaran::whereSantri_id($row->id)->whereRaw('MONTH(tanggal_bayar) = MONTH(NOW())')->whereRaw('YEAR(tanggal_bayar) = YEAR(NOW())')->get()->count();
+                return $data ?? 0;
             })
             ->addColumn('belum', function ($row) {
                 $cek = Pembayaran::whereSantri_id($row->id)->whereRaw('MONTH(tanggal_bayar) = MONTH(NOW())')->whereRaw('YEAR(tanggal_bayar) = YEAR(NOW())')->get()->count();
-                if (4 - $cek == 0) {
+                if (4 - ($cek ?? 0) == 0) {
                     return 'Sudah Lunas';
                 } else {
                     return (4 - $cek);
