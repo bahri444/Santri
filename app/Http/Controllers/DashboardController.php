@@ -4,10 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\AksesMenu;
 use App\Models\Menu;
+use App\Models\Pembayaran;
 use App\Models\Role;
+use App\Models\Ruangan;
+use App\Models\Santri;
+use App\Models\Tagihan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use Illuminate\Cache\TagSet;
+use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
+use PhpOffice\PhpSpreadsheet\Calculation\MathTrig\Sum;
 
 class DashboardController extends Controller
 {
@@ -17,6 +24,10 @@ class DashboardController extends Controller
         $data = [
             'title' => 'dashboard',
             'user' => User::all()->count(),
+            'santri' => Santri::all()->count(),
+            'ruangan' => Ruangan::all()->count(),
+            'tagihan' => Tagihan::get('tagihan')->where('tagihan' == like(Month(now())),
+            'pembayaran' => Pembayaran::groupBy('santri_id')->sum('pembayaran'),
             'role' => Role::all()->count(),
         ];
         return view('admin.dashboard', $data);

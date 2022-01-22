@@ -24,8 +24,8 @@
                     <span class="info-box-icon bg-info elevation-1"><i class="fas fa-users"></i></span>
 
                     <div class="info-box-content">
-                        <span class="info-box-text">Santri</span>
-                        <span class="info-box-number">0</span>
+                        <span class="info-box-text"><a href="{{route('santri')}}">Santri</a></span>
+                        <span class="info-box-number">{{$santri}}</span>
                     </div>
                 </div>
             </div>
@@ -34,8 +34,8 @@
                     <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-building"></i></span>
 
                     <div class="info-box-content">
-                        <span class="info-box-text">Ruangan</span>
-                        <span class="info-box-number">0</span>
+                        <span class="info-box-text"><a href="{{route('ruangan')}}">Ruangan</a></span>
+                        <span class="info-box-number">{{$ruangan}}</span>
                     </div>
                 </div>
             </div>
@@ -46,8 +46,8 @@
                     <span class="info-box-icon bg-success elevation-1"><i class="fas fa-list"></i></span>
 
                     <div class="info-box-content">
-                        <span class="info-box-text">Pembayaran Minggu ini</span>
-                        <span class="info-box-number">0</span>
+                        <span class="info-box-text"><a href="{{route('pembayaran')}}">Pembayaran Minggu ini</a></span>
+                        <span class="info-box-number">{{$pembayaran}}</span>
                     </div>
                 </div>
             </div>
@@ -56,8 +56,8 @@
                     <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-list"></i></span>
 
                     <div class="info-box-content">
-                        <span class="info-box-text">Pembayaran Bulan ini</span>
-                        <span class="info-box-number">0</span>
+                        <span class="info-box-text"><a href="{{route('tagihan')}}">Pembayaran Bulan ini</a></span>
+                        <span class="info-box-number">{{$tagihan}}</span>
                     </div>
                 </div>
             </div>

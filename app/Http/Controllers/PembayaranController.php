@@ -29,10 +29,16 @@ class PembayaranController extends Controller
                     return $this->rupiah($row->tagihan);
                 })
                 ->addColumn('sisa', function ($row) {
-                    return $this->rupiah(0);
+                    return $this->rupiah($row->tagihan - $row->pembayaran);
                 })
                 ->addColumn('status', function ($row) {
-                    return '';
+                    if ($row->pembayaran == $row->tagihan) {
+                        return 'lunas';
+                    } elseif ($row->pembayaran >= $row->tagihan) {
+                        return 'pembayaran lebih';
+                    } elseif ($row->pembayaran != $row->tagihan) {
+                        return 'Tidak';
+                    }
                 })
                 ->addColumn('action', function ($row) {
                     $role = $this->role();
@@ -50,7 +56,7 @@ class PembayaranController extends Controller
                 ->rawColumns(['action', 'rupiah', 'sisa', 'pembayaran', 'status'])
                 ->make(true);
         }
-        $title = 'pembayaran';
+        $title = 'Pembayaran';
         $th = [];
         $level = $this->role();
         if ($level->can_edit || $level->can_delete)
