@@ -30,7 +30,10 @@
 
     <!-- Main Footer -->
     <footer class="main-footer">
-        <strong>Copyright &copy; {{date('Y')}} Yayasan
+        @php
+            $app=\App\Models\Setting::whereId(1)->first();
+        @endphp
+        <strong>Copyright &copy; {{date('Y')}} {{$app->copyright}}
         <div class="float-right d-none d-sm-inline-block">
             <b>Version</b> 1.0.0
         </div>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AksesMenu;
 use App\Models\Menu;
 use App\Models\Pembayaran;
+<<<<<<< HEAD
 use App\Models\Role;
 use App\Models\Ruangan;
 use App\Models\Santri;
@@ -15,6 +16,14 @@ use App\Models\User;
 use Illuminate\Cache\TagSet;
 use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 use PhpOffice\PhpSpreadsheet\Calculation\MathTrig\Sum;
+=======
+use App\Models\Pengeluaran;
+use App\Models\Ruangan;
+use App\Models\Santri;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+>>>>>>> main
 
 class DashboardController extends Controller
 {
@@ -23,12 +32,23 @@ class DashboardController extends Controller
     {
         $data = [
             'title' => 'dashboard',
+<<<<<<< HEAD
             'user' => User::all()->count(),
             'santri' => Santri::all()->count(),
             'ruangan' => Ruangan::all()->count(),
             'tagihan' => Tagihan::get('tagihan')->where('tagihan' == like(Month(now())),
             'pembayaran' => Pembayaran::groupBy('santri_id')->sum('pembayaran'),
             'role' => Role::all()->count(),
+=======
+            'santri' => Santri::all()->count(),
+            'ruangan' => Ruangan::all()->count(),
+            'minggu' => Pembayaran::whereRaw('YEARWEEK(created_at) = YEARWEEK(NOW())')->get()->count(),
+            'bulan' => Pembayaran::whereRaw('YEAR(created_at) = YEAR(NOW())')->whereRaw('MONTH(created_at) = MONTH(NOW())')->get()->count(),
+            'totalPengeluaran' => $this->rupiah(Pengeluaran::selectRaw("(SUM(harga) * SUM(jumlah)) as total ")->groupBy(DB::raw('YEARWEEK(tanggal_pembelian)'))->first()->total),
+            'totalpengBulan' => $this->rupiah(Pengeluaran::selectRaw("(SUM(harga) * SUM(jumlah)) as total ")->whereMonth('tanggal_pembelian', now())->whereYear('tanggal_pembelian', now())->first()->total),
+            'totalPemasukan' => $this->rupiah(Pembayaran::selectRaw("SUM(tagihan.tagihan) as total")->join('tagihan', 'pembayaran.tagihan_id', '=', 'tagihan.id')->groupBy(DB::raw('YEARWEEK(pembayaran.tanggal_bayar)'))->first()->total),
+            'totalPemasukanBulan' => $this->rupiah(Pembayaran::selectRaw("SUM(tagihan.tagihan) as total")->join('tagihan', 'pembayaran.tagihan_id', '=', 'tagihan.id')->whereMonth('tanggal_bayar', DB::raw('MONTH(now())'))->whereYear('tanggal_bayar', DB::raw('YEAR(now())'))->first()->total),
+>>>>>>> main
         ];
         return view('admin.dashboard', $data);
     }

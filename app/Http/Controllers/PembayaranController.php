@@ -16,18 +16,19 @@ class PembayaranController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = Pembayaran::select('pembayaran.*', 'tagihan.nama_tagihan', 'tagihan.tagihan', 'santri.nis', 'santri.nama')
+            $data = Pembayaran::select('pembayaran.*', 'tagihan.nama_tagihan', 'tagihan.tagihan', 'santri.nis', 'santri.nama', 'ruangan.nama_ruangan')
                 ->join('tagihan', 'pembayaran.tagihan_id', '=', 'tagihan.id')
                 ->join('santri', 'pembayaran.santri_id', '=', 'santri.id')
+                ->join('ruangan_santri', 'santri.id', '=', 'ruangan_santri.santri_id')
+                ->join('ruangan', 'ruangan_santri.ruangan_id', '=', 'ruangan.id')
+                ->orderBy('created_at', 'DESC')
                 ->get();
             return DataTables::of($data)
                 ->addIndexColumn()
-                ->addColumn('pembayaran', function ($row) {
-                    return $this->rupiah($row->pembayaran);
-                })
                 ->addColumn('rupiah', function ($row) {
                     return $this->rupiah($row->tagihan);
                 })
+<<<<<<< HEAD
                 ->addColumn('sisa', function ($row) {
                     return $this->rupiah($row->tagihan - $row->pembayaran);
                 })
@@ -40,34 +41,39 @@ class PembayaranController extends Controller
                         return 'Tidak';
                     }
                 })
+=======
+>>>>>>> main
                 ->addColumn('action', function ($row) {
                     $role = $this->role();
                     $btn = '';
                     if ($role->can_edit && $role->can_delete) {
-                        $btn = "<button data-id='$row->id' data-nama_tagihan='$row->nama_tagihan' data-tagihan='$row->tagihan' data-keterangan='$row->keterangan' class='edit btn btn-warning btn-sm m-1'><i class='fas fa-edit'></i></button>";
+                        $btn = "<button data-id='$row->id' data-santri_id='$row->santri_id' data-tagihan_id='$row->tagihan_id' data-tanggal_bayar='$row->tanggal_bayar' class='edit btn btn-warning btn-sm m-1'><i class='fas fa-edit'></i></button>";
                         $btn .= "<button data-id='$row->id' class='hapus btn btn-danger btn-sm m-1'><i class='fas fa-trash'></i></button>";
                     } elseif ($role->can_edit) {
-                        $btn = "<button data-id='$row->id' data-nama_tagihan='$row->nama_tagihan' data-tagihan='$row->tagihan' data-keterangan='$row->keterangan'  class='edit btn btn-warning btn-sm m-1'><i class='fas fa-edit'></i></button>";
+                        $btn = "<button data-id='$row->id' data-santri_id='$row->santri_id' data-tagihan_id='$row->tagihan_id' data-tanggal_bayar='$row->tanggal_bayar'  class='edit btn btn-warning btn-sm m-1'><i class='fas fa-edit'></i></button>";
                     } elseif ($role->can_delete) {
                         $btn = "<button data-id='$row->id' class='hapus btn btn-danger btn-sm m-1'><i class='fas fa-trash'></i></button>";
                     }
                     return $btn;
                 })
-                ->rawColumns(['action', 'rupiah', 'sisa', 'pembayaran', 'status'])
+                ->rawColumns(['action', 'rupiah'])
                 ->make(true);
         }
         $title = 'Pembayaran';
         $th = [];
         $level = $this->role();
         if ($level->can_edit || $level->can_delete)
-            $th = ['No', 'NIS', 'Nama Santri', 'Tagihan', 'Pembayaran', 'Sisa', 'status', 'Aksi'];
+            $th = ['No', 'NIS', 'Nama Santri', 'Pembayaran', 'Tanggal Bayar', 'Ruangan', 'Aksi'];
         else
-            $th = ['No', 'NIS', 'Nama Santri', 'Tagihan', 'Pembayaran', 'Sisa', 'status',];
+            $th = ['No', 'NIS', 'Nama Santri', 'Pembayaran', 'Tanggal Bayar', 'Ruangan'];
         $urlDatatable = route('pembayaran');
         $aksi = route('pembayaran.aksi');
         $tagihan = Tagihan::latest()->get();
         $santri = Santri::all();
-        return view('admin.pembayaran.index', compact('title', 'th', 'urlDatatable', 'aksi', 'level', 'tagihan', 'santri'));
+        return view(
+            'admin.pembayaran.index',
+            compact('title', 'th', 'urlDatatable', 'aksi', 'level', 'tagihan', 'santri')
+        );
     }
     public function aksi(Request $request)
     {
@@ -91,26 +97,23 @@ class PembayaranController extends Controller
     }
     private function tambah(Request $request)
     {
-        $role = Pembayaran::create([
-            'nama_tagihan' => $request->nama_tagihan,
-            'tagihan' => $request->tagihan,
-            'keterangan' => $request->keterangan
-        ]);
-        if ($role) {
-            return ['status' => 'success', 'pesan' => 'Data berhasil ditambah'];
+        $cek = Pembayaran::whereRaw("YEARWEEK(tanggal_bayar) = YEARWEEK('$request->tanggal_bayar')")->whereSantri_id($request->santri_id)->first();
+        if ($cek) {
+            return ['status' => 'error', 'pesan' => 'Santri sudah membayar uang catering pada Minggu tersebut'];
         } else {
-            return ['status' => 'error', 'pesan' => 'Data gagal ditambah'];
+            $role = Pembayaran::create($request->only('santri_id', 'tagihan_id', 'tanggal_bayar'));
+            if ($role) {
+                return ['status' => 'success', 'pesan' => 'Data berhasil ditambah'];
+            } else {
+                return ['status' => 'error', 'pesan' => 'Data gagal ditambah'];
+            }
         }
     }
     private function edit(Request $request)
     {
         $role = Pembayaran::whereId($request->id)->first();
         if ($role) {
-            $role->update([
-                'nama_tagihan' => $request->nama_tagihan,
-                'tagihan' => $request->tagihan,
-                'keterangan' => $request->keterangan
-            ]);
+            $role->update($request->only('santri_id', 'tagihan_id', 'tanggal_bayar'));
             return ['status' => 'success', 'pesan' => 'Data berhasil diubah'];
         } else {
             return ['status' => 'error', 'pesan' => 'Data tidak ditemukan'];

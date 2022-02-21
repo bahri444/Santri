@@ -38,9 +38,9 @@ class RuanganController extends Controller
         $th = [];
         $level = $this->role();
         if ($level->can_edit || $level->can_delete)
-            $th = ['No', 'Kode Ruangan', 'Nama Ruangan', 'Data Santri', 'Aksi'];
+            $th = ['No', 'Kode Ruangan', 'Nama Ruangan', 'Data Santri', 'Pembina', 'Aksi'];
         else
-            $th = ['No', 'Kode Ruangan', 'Nama Ruangan', 'Data Santri'];
+            $th = ['No', 'Kode Ruangan', 'Nama Ruangan', 'Pembina', 'Data Santri'];
         $urlDatatable = route('ruangan');
         $aksi = route('ruangan.aksi');
         return view('admin.ruangan.index', compact('title', 'th', 'urlDatatable', 'aksi', 'level'));
@@ -67,10 +67,7 @@ class RuanganController extends Controller
     }
     private function tambah(Request $request)
     {
-        $santri = Ruangan::create([
-            'kode_ruangan' => $request->kode_ruangan,
-            'nama_ruangan' => $request->nama_ruangan,
-        ]);
+        $santri = Ruangan::create($request->only('kode_ruangan', 'nama_ruangan', 'pembina_ruangan'));
         if ($santri) {
             return ['status' => 'success', 'pesan' => 'Data berhasil ditambah'];
         } else {
@@ -81,9 +78,7 @@ class RuanganController extends Controller
     {
         $santri = Ruangan::whereId($request->id)->first();
         if ($santri) {
-            $santri->kode_ruangan = $request->kode_ruangan;
-            $santri->nama_ruangan = $request->nama_ruangan;
-            $santri->update();
+            $santri->update($request->only('kode_ruangan', 'nama_ruangan', 'pembina_ruangan'));
             return ['status' => 'success', 'pesan' => 'Data berhasil diubah'];
         } else {
             return ['status' => 'error', 'pesan' => 'Data tidak ditemukan'];

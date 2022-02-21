@@ -3,6 +3,7 @@
             ->where('akses_menu.role_id', Auth::user()->role_id)
             ->orderBy('m.urutan', 'ASC')
             ->get();
+    $app=\App\Models\Setting::whereId(1)->first();
     $segment = Request::segment(2) ?? 'admin';
 @endphp
 
@@ -10,8 +11,8 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4" id="sidebar">
     <!-- Brand Logo -->
     <a href="{{ route('dashboard') }}" class="brand-link">
-        <img src="{{ asset('assets') }}/dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-        <span class="brand-text font-weight-light">Catering Santri</span>
+        <img src="{{ asset('assets/logo').'/'.$app->logo }}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+        <span class="brand-text font-weight-light">{{ $app->nama }}</span>
     </a>
 
     <!-- Sidebar -->

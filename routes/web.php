@@ -63,13 +63,18 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
             Route::post('/aksi', [\App\Http\Controllers\PembayaranController::class, 'aksi'])->name('pembayaran.aksi');
             Route::post('/detail/{id}', [\App\Http\Controllers\PembayaranController::class, 'detail'])->name('pembayaran.detail');
         });
+        Route::prefix('laporan')->group(function () {
+            Route::get('/', [\App\Http\Controllers\LaporanController::class, 'index'])->name('laporan');
+            Route::post('/datatable', [\App\Http\Controllers\LaporanController::class, 'datatable'])->name('laporan.datatable');
+            Route::post('/aksi', [\App\Http\Controllers\LaporanController::class, 'aksi'])->name('laporan.aksi');
+        });
         Route::prefix('pengeluaran')->group(function () {
             Route::get('/', [\App\Http\Controllers\PengeluaranController::class, 'index'])->name('pengeluaran');
             Route::post('/aksi', [\App\Http\Controllers\PengeluaranController::class, 'aksi'])->name('pengeluaran.aksi');
         });
         Route::prefix('setting')->group(function () {
             Route::get('/', [\App\Http\Controllers\SettingController::class, 'index'])->name('setting');
-            Route::post('/aksi', [\App\Http\Controllers\SettingController::class, 'aksi'])->name('setting.aksi');
+            Route::post('/simpan', [\App\Http\Controllers\SettingController::class, 'simpan'])->name('setting.simpan');
         });
     });
 });

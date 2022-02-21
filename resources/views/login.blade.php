@@ -10,19 +10,22 @@
         font-family: 'Roboto Condensed', sans-serif;
     }
 </style>
+@php
+    $app=\App\Models\Setting::whereId(1)->first();
+@endphp
 
 <body>
     <div class="container-fluid m-0">
         <div class="row bg-light d-flex justify-content-center align-items-center" style="height: 100vh">
             <div class="d-none d-md-block d-lg-block col-md-6 col-lg-4 p-3">
-                <img src="{{ asset('assets/login_logo.svg') }}" alt="login" class="w-100">
+                <img src="{{ asset('assets/logo').'/'.$app->logo }}" alt="login" class="w-100">
             </div>
             <div class="col-sm-12 col-md-6 col-lg-8 h-100" style="background-color: #757de8">
                 <div class="row d-flex justify-content-center align-items-center h-100 w-100">
                     <div class="col-sm-12 col-md-6 col-lg-6">
                         <div class="card shadows">
                             <div class="card-body">
-                                <h3>Aplikasi Pembayaran Catering Santri</h3>
+                                <h3>{{ $app->nama }}</h3>
                                 <small>Silahkan login untuk menggunakan aplikasi</small>
                                 <hr>
                                 <form action="{{ route('ceklogin') }}" method="post">

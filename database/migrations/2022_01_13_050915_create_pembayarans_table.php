@@ -17,8 +17,7 @@ class CreatePembayaransTable extends Migration
             $table->id();
             $table->foreignId('santri_id')->constrained('santri')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('tagihan_id')->constrained('tagihan')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->date('tanggal_bayar');
-            $table->decimal('pembayaran', 20);
+            $table->date('tanggal_bayar')->nullable();
             $table->timestamps();
         });
     }

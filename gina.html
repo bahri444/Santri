@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        @import url(https://fonts.googleapis.com/css?family=Love+Ya+Like+A+Sister);
+.float {
+  float: left;
+  width: 100px;
+}
+.font {
+  font-size: 130px;
+  text-align: center;
+  margin: 0 30px;
+  font-family: 'Love Ya Like A Sister', cursive;
+  font-weight: bold;
+}
+.right {
+  margin-left: 47px;
+}
+.heart-shape{
+  margin: 61px auto;
+  position: relative;
+  width: 100px;
+  height: 100px;
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  transform: rotate(45deg);
+  background-color: #DA0F2F;
+}
+.heart-shape:before,
+.heart-shape:after{
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  content: '';
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  -o-border-radius: 50%;
+  border-radius: 50%;
+  background-color: #DA0F2F;
+}
+.heart-shape:before{
+  bottombottom: 0px;
+  left: -50px;
+}
+.heart-shape:after{
+  top: -50px;
+  rightright: 0px;
+}
+@media only screen and (max-width: 1035px) {
+ body{
+    display: none;
+  }
+}
+    </style>
+</head>
+<body>
+    <div class="hidden" style="display: flex;justify-content: center;align-items: center;flex-direction: column;">
+<div>
+    <caption>
+        <div class="float font">I</div>
+        <div class="heart-shape float"></div>
+        <div class="float font right">U</div>
+    </caption>
+</div>
+<div>
+    <caption>
+        <div class="float font">G</div>
+        <div class="float font">i</div>
+        <div class="float font">n</div>
+        <div class="float font">a</div>
+    </caption>
+</div>
+<div>
+    <caption>
+        <div class="float font">F</div>
+        <div class="float font">a</div>
+        <div class="float font">i</div>
+        <div class="float font">r</div>
+        <div class="float font">u</div>
+        <div class="float font">s</div>
+    </caption>
+</div>
+<div>
+    <caption>
+        <div class="float font">S</div>
+        <div class="float font">h</div>
+        <div class="float font">o</div>
+        <div class="float font">f</div>
+        <div class="float font">i</div>
+    </caption>
+</div>
+    </div>
+</body>
+</html>
